@@ -1,53 +1,51 @@
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
-import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Avatar from '@mui/material/Avatar';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import { red } from '@mui/material/colors';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import ShareIcon from '@mui/icons-material/Share';
+import Button from '@mui/material/Button';
+import { Box, Stack } from '@mui/material';
+import Divider from '@mui/material/Divider';
 
-function UserCard({user}) {
+function UserCard({ user }) {
+  const date = new Date(user.createdAt);
+  const dateFormat = Intl.DateTimeFormat("fr-FR", {
+    dateStyle: "short",
+  }).format(date);
+console.log(user.Profile)
   return (
-    <> 
-  <Card sx={{ maxWidth: 345 }}>
-      <CardHeader
-        avatar={
-          <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-            R
-          </Avatar>
-        }
-       
-        title= {`${user.firstName} ${user.lastName}`}
-      />
-      <CardMedia
-        component="img"
-        height="194"
-        image="/static/images/cards/paella.jpg"
-        alt="Paella dish"
-      />
-      <CardContent>
-        <Typography variant="body2" color="text.secondary">
-          This impressive paella is a perfect party dish and a fun meal to cook
-          together with your guests. Add 1 cup of frozen peas along with the mussels,
-          if you like.
-        </Typography>
-      </CardContent>
-      <CardActions disableSpacing>
-        <IconButton aria-label="add to favorites">
-          <FavoriteIcon />
-        </IconButton>
-        <IconButton aria-label="share">
-          <ShareIcon />
-        </IconButton>
-        </CardActions>
-
-        </Card>
-        </>
-  )
+    <>
+      <Card sx={{ maxWidth: 345, height: 450, display: 'flex', flexDirection: 'column' }}>
+        <Box display="flex" flexDirection="column" flex="1">
+          <Box display="flex" alignItems="center" justifyContent="center" padding="16px">
+            <Avatar
+              alt="Remy Sharp"
+              src={user.Profile.imageUrl}
+              sx={{ width: 140, height: 140 }}
+            />
+          </Box>
+          <Divider variant="middle" />
+          <CardHeader
+            title={`${user.firstName} ${user.lastName}`}
+            subheader={`Membre : ${dateFormat}`}
+          />
+          <Divider variant="middle" />
+          <CardContent sx={{ flexGrow: 1 }}>
+            <Typography variant="body2" color="text.secondary">
+              Secteur : {user.secteur}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Organisation : {user.organisation}
+            </Typography>
+          </CardContent>
+          <Box sx={{ padding: '16px', display: 'flex', justifyContent: 'center' }}>
+            <Button variant="contained" size="small">Envoyer un referral</Button>
+          </Box>
+        </Box>
+      </Card>
+    </>
+  );
 }
 
-export default UserCard
+export default UserCard;

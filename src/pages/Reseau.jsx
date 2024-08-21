@@ -4,6 +4,7 @@ import { getAllUsers } from "../redux/apiCalls/userApiCall";
 import UserCard from "../components/UserCard";
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Unstable_Grid2';
+import { Container, Typography } from "@mui/material";
 
 function Reseau() {
   const dispatch = useDispatch();
@@ -15,10 +16,14 @@ function Reseau() {
   }, [dispatch]);
 
   return (
-    <div>
-      <h2>Liste des Agents</h2>
+    
+     
+      <Container>
+        <Box mb={2}>   
+             <Typography variant = "h4" fontWeight="600">Liste des Agents</Typography>
+        </Box>
       <Box sx={{ flexGrow: 1 }}>
-      <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+      <Grid container spacing={{ xs: 4, md: 4 }} columns={{ xs: 4, sm: 8, md: 16 }}>
 
         {allUsers &&allUsers.map((user) => (
                     <Grid xs={2} sm={4} md={4}>
@@ -29,8 +34,9 @@ function Reseau() {
         ))}
           </Grid>
           </Box>
+          </Container>
       
-    </div>
+ 
   );
 }
 
