@@ -133,7 +133,7 @@ function Profil() {
             alt={
               userByID?.firstName + "" + userByID?.lastName + "profil picture"
             }
-            src={userByID ? userByID?.profile.image : imgPreview}
+            src={userByID ? userByID?.profile.imageUrl : imgPreview}
             sx={{
               width: { xs: "100px", lg: "150px" },
               height: { xs: "100px", lg: "150px" },

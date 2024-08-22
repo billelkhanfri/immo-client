@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { Box, Stack } from '@mui/material';
 import Divider from '@mui/material/Divider';
-
+import {Link} from 'react-router-dom'
 function UserCard({ user }) {
   const date = new Date(user.createdAt);
   const dateFormat = Intl.DateTimeFormat("fr-FR", {
@@ -18,6 +18,8 @@ console.log(user.Profile)
     <>
       <Card sx={{ maxWidth: 345, height: 450, display: 'flex', flexDirection: 'column' }}>
         <Box display="flex" flexDirection="column" flex="1">
+     <Link
+                      to={`/mon-profil/${user.id}`}> 
           <Box display="flex" alignItems="center" justifyContent="center" padding="16px">
             <Avatar
               alt="Remy Sharp"
@@ -39,9 +41,13 @@ console.log(user.Profile)
               Organisation : {user.organisation}
             </Typography>
           </CardContent>
+          </Link>
+          <Link   to={`/creer-une-offre/${user.id}`}> 
           <Box sx={{ padding: '16px', display: 'flex', justifyContent: 'center' }}>
+         
             <Button variant="contained" size="small">Envoyer un referral</Button>
           </Box>
+          </Link>
         </Box>
       </Card>
     </>

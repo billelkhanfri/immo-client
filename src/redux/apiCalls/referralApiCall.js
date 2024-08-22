@@ -48,7 +48,6 @@ export function createReferral(referral) {
       dispatch(referralActions.create(data));
     } catch (error) {
       toast.error(error.response.data.message);
-      console.log(error.response.data.message);
     }
   };
 }

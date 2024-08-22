@@ -38,6 +38,10 @@ function App() {
             path="/creer-une-offre"
             element={user ? <CreateOffer /> : <Navigate to="/" />}
           ></Route>
+           <Route
+            path="/creer-une-offre/:id"
+            element={user ? <CreateOffer /> : <Navigate to="/" />}
+          ></Route>
           <Route
             path="/offre/:id"
             element={user ? <Offer /> : <Navigate to="/" />}
