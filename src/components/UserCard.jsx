@@ -13,7 +13,7 @@ function UserCard({ user }) {
   const dateFormat = Intl.DateTimeFormat("fr-FR", {
     dateStyle: "short",
   }).format(date);
-console.log(user.Profile)
+
   return (
     <>
       <Card sx={{ maxWidth: 345, height: 450, display: 'flex', flexDirection: 'column' }}>

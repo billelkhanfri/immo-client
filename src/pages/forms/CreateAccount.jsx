@@ -185,6 +185,10 @@ function CreateAccount() {
               error={!!errors.telephone}
               helperText={errors.telephone && errors.telephone.message}
               {...register("telephone", {
+                pattern: {
+                  value: /^[0-9]+$/,
+                  message: "Veuillez entrer un numéro de téléphone valide",
+                },
                 required: "Ce champ est obligatoire.",
                 minLength: {
                   value: 10,

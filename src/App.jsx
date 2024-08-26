@@ -12,6 +12,7 @@ import TermsOfService from "./pages/TermsOfService";
 import { useSelector } from "react-redux";
 import Offer from "./pages/Offer";
 import Reseau from './pages/Reseau';
+import Referrals from "./pages/Referrals";
 
 function App() {
   const { user } = useSelector((state) => state.auth);
@@ -29,6 +30,10 @@ function App() {
        <Route
             path="/mon-reseau"
             element={user ? <Reseau/> : <Navigate to="/" />}
+          ></Route>
+          <Route
+            path="/referrals"
+            element={user ? <Referrals/> : <Navigate to="/" />}
           ></Route>
           <Route
             path="/mes-offres"

@@ -24,6 +24,7 @@ const pages = [
   { label: "Créer une offre", to: "/creer-une-offre" },
   { label: "Mes offres", to: "/mes-offres" },
   { label: "Mon réseau", to: "/mon-reseau" },
+  { label: "Referrals", to: "/referrals" }
 
 ];
 

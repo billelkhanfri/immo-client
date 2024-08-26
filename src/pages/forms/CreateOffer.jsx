@@ -36,7 +36,7 @@ useEffect(()=> {
 
 
   const onSubmit = (data) => {
-    const { clientNom, clientEmail, clientTelephone, ...referralData } = data;
+    const { clientNom, clientEmail, clientTelephone,nature, ...referralData } = data;
 
     // Construct clientInfo object
     referralData.clientInfo = {
@@ -50,7 +50,7 @@ useEffect(()=> {
     dispatch(createReferral(referralData));
     navigate("/mes-offres");
   };
-
+console.log(nature)
   return (
     <Container sx={{ backgroundColor: "#FFFFFF", borderRadius: 2, padding: 2 }}>
       <Typography
@@ -132,6 +132,7 @@ useEffect(()=> {
                   onChange={(e) => {
                     setNature(e.target.value); // Update the state on change
                     field.onChange(e.target.value); // Trigger the field change
+                  
                   }}
                 >
                   <FormControlLabel
@@ -220,21 +221,26 @@ fullWidth
           helperText={errors.clientEmail ? "Email du Client is required" : ""}
           sx={{ mb: 2 }}
         />
-        <TextField
-          fullWidth
-          label="Téléphone du Client"
-          type="tel"
-          {...register("clientTelephone")}
-          sx={{ mb: 2 }}
-        />
+      <TextField
+  fullWidth
+  label="Téléphone du Client"
+  type="tel"
+  {...register("clientTelephone", {
+    required: "Numéro de téléphone est requis",
+    pattern: {
+      value: /^[0-9]+$/,
+      message: "Veuillez entrer un numéro de téléphone valide",
+    },
+  })}
+  error={!!errors.clientTelephone}
+  helperText={errors.clientTelephone ? errors.clientTelephone.message : ""}
+  sx={{ mb: 2 }}
+  inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+/>
+
 
      
-        {/* <TextField
-          fullWidth
-          label="Receiver ID"
-          {...register("receiverId")}
-          sx={{ mb: 2 }}
-        /> */}
+    
 
         <Button
           type="submit"
