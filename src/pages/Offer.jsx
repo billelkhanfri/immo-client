@@ -1,20 +1,26 @@
-import React, { useEffect } from "react";
+import  { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import {  useNavigate, useParams } from "react-router-dom";
+import { SlLocationPin } from "react-icons/sl";
+import CardHeader from '@mui/material/CardHeader';
+import Avatar from '@mui/material/Avatar';
+
 import {
   Container,
   Typography,
-  Box,
   Card,
   CardContent,
-  CircularProgress,
   Button,
   Divider,
   Grid,
-  CardMedia,
+  Box,
+  Stack
+
+
 } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { getReferral } from "../redux/apiCalls/referralApiCall"; // Update the path according to your project structure
+import Chip from '@mui/material/Chip';
 
 function formatDate(dateString) {
   const date = new Date(dateString);
@@ -29,11 +35,12 @@ function formatDate(dateString) {
 }
 
 function Offer() {
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'))
   const navigate = useNavigate();
   const { id } = useParams();
   const dispatch = useDispatch();
   const { referral } = useSelector((state) => state.referrals);
-
+console.log(referral)
   const date = referral?.createdAt;
   const formattedDate = formatDate(date);
 
@@ -59,55 +66,82 @@ function Offer() {
       </Button>
 
       <Grid container spacing={2}>
-        <Grid item xs={8}>
-          {/* Offer Title */}
-          <Typography
-            variant="h4"
-            component={"h2"}
-            sx={{
-              mt: 2,
-              color: "primary.main",
-            }}
-          >
-            {referral?.commentaire}
-          </Typography>
+        <Grid item xs={6}>
+         
+          <Chip
+          
+        label= { `${referral?.typeDeReferral}`.charAt(0).toUpperCase() +referral?.typeDeReferral.slice(1)}
+
+        variant="contained"
+        sx= {{
+          mt:4,
+          bgcolor:"secondary.main"
+        }}
+      />
+   
           {/* Subtitle category */}
           <Typography component={"div"} sx={{ display: "flex", gap: 1, my: 1 }}>
-            <Typography variant="subtitle1">
-              {referral?.sender.organisation}
-            </Typography>
-            <Divider orientation="vertical" variant="middle" flexItem />
+          <Divider orientation="vertical" variant="middle" flexItem />
+          <Typography variant="subtitle1" sx={{ display: "flex", justifyContent:"center", alignItems:"center" }}>Lieu :  <SlLocationPin /></Typography>
+         
+        
             <Typography variant="subtitle1">{referral?.lieu}</Typography>
             <Divider orientation="vertical" variant="middle" flexItem />
-            <Typography variant="subtitle1">
-              {referral?.typeDeReferral}
-            </Typography>
+           
           </Typography>
+          <Divider></Divider>
           {/* Offer informations */}
-          <Typography variant="h5" paddingTop={5} paddingBottom={2}>
-            Descriptif de l'offre
+          <Typography variant="h5" paddingTop={2} paddingBottom={2}>
+            Information Géneral
           </Typography>
-          <Typography variant="body1">{referral?.commentaire}</Typography>
-          <Typography variant="h5" paddingTop={5} paddingBottom={2}>
-            Informations complémentaires
-          </Typography>
-          <Typography variant="body1">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolorum
-            repudiandae dolores rerum laboriosam sapiente officia repellat!
-            Nisi, asperiores totam ipsum, excepturi, atque laborum vel provident
-            ea fugit iure perferendis debitis!
-          </Typography>
-          <Typography variant="h5" paddingTop={5} paddingBottom={2}>
-            Bienvenue chez {referral?.sender.organisation}
-          </Typography>
-          <Typography variant="body1">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus
-            quisquam distinctio, aliquid consectetur ipsa dicta fuga eligendi
-            deserunt libero tempora ipsum eius hic ea provident nihil est vitae.
-            Beatae, deserunt?
-          </Typography>
+{ referral?.senderId == userInfo.id ? ( <CardHeader
+        avatar={
+          <Avatar  aria-label="recipe"  sx={{ width: 56, height: 56 }} src ={referral?.receiver.Profile.imageUrl}>
+        
+          </Avatar>
+        }
+      
+        title= "Agent partener"
+        subheader = {referral?.receiver.firstName+ " " + referral?.receiver.lastName + " / "   + referral?.sender.organisation.toUpperCase()} 
+       
+      />):( <CardHeader
+        avatar={
+          <Avatar  aria-label="recipe"  sx={{ width: 56, height: 56 }}src ={referral?.sender.Profile.imageUrl}>
+        
+          </Avatar>
+        }
+       title= "Agent partener"
+      
+        subheader = {referral?.sender.firstName +" "  + referral?.sender.lastName+ " / " + referral?.sender.organisation.toUpperCase()}
+       
+      />)}
+         
+          
+ <Box container  sx={{ flexGrow: 1 , mt:4}}>
+      <Grid container >
+        <Grid  xs={6} padding="16px" >
+          <Typography color="rgba(0,0,0,0.6)" fontWeight="600">Honnoraire </Typography>
+          <Typography >{referral?.honnoraire} %</Typography>
         </Grid>
-        <Grid item xs={4}>
+        <Grid  xs={6} padding="16px" >
+          <Typography color="rgba(0,0,0,0.6)" fontWeight="600">Prix du bien </Typography>
+          <Typography >{referral?.price} €</Typography>
+        </Grid>
+        <Grid   xs={6} padding="16px" >
+          <Typography color="rgba(0,0,0,0.6)" fontWeight="600">Nature du Contact </Typography>
+          <Typography >{referral?.natureDuContact.charAt(0).toUpperCase()+referral?.natureDuContact.slice(1)}</Typography>
+        </Grid>
+        <Grid  xs={6} padding="16px" >
+          <Typography color="rgba(0,0,0,0.6)" fontWeight="600">Honnoraire </Typography>
+          <Typography >{referral?.honnoraire} %</Typography>
+        </Grid>
+        
+      
+      </Grid>
+    </Box>
+
+        </Grid>
+        <Grid item xs={6}>
           <Card>
             {/* <CardMedia sx={{ height: 140 }} /> */}
             <CardContent
@@ -117,13 +151,23 @@ function Offer() {
                 gap: 1.5,
               }}
             >
-              <Typography variant="h5">{referral?.commentaire}</Typography>
+              <Typography variant="h5">Info Client</Typography>
               <Typography variant="subtitle1">
-                {referral?.sender.organisation}
+                Nom : {referral?.client.nom}
               </Typography>
-              <Button variant="contained" sx={{ width: "100%" }}>
-                Postuler
-              </Button>
+              <Typography variant="subtitle1">
+                Email : {referral?.client.email}
+              </Typography>
+              <Typography variant="subtitle1">
+                Télephone : {referral?.client.telephone}
+              </Typography>
+              { referral?.senderId == userInfo.id ?("") : (  <Stack spacing={2} direction="row">
+                <Button variant="outlined" color="error">Rejeter</Button>
+      <Button variant="contained">Accepter</Button>
+      
+    </Stack>
+              )}
+             
               <Typography variant="caption">
                 Publiée le {formattedDate} - Ref : REF
                 {referral?.id.substring(0, 8)}

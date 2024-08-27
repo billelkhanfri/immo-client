@@ -65,8 +65,8 @@ function ReferralCard({referral}) {
 
 
 <Box sx={{ padding: '16px', display: 'flex', justifyContent: 'right' }}>
-{referral?.status =="pending" ? (<Link to= {`/offre/${referral.id}`}> <Button variant="contained" size="small">Voir</Button></Link>
-): (<Button  variant="contained" disabled size="small">En attente</Button>)}
+{referral?.status =="pending" ? (<Button  variant="contained" disabled size="small">En attente</Button>
+): ( <Link to= {`/offre/${referral.id}`}> <Button variant="contained" size="small">Voir</Button></Link>)}
 </Box>
 
 
