@@ -1,4 +1,4 @@
-import  { useEffect } from "react";
+import  { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {  useNavigate, useParams } from "react-router-dom";
 import { SlLocationPin } from "react-icons/sl";
@@ -43,10 +43,35 @@ function Offer() {
 console.log(referral)
   const date = referral?.createdAt;
   const formattedDate = formatDate(date);
+  const [timeRemaining, setTimeRemaining] = useState('');
 
   useEffect(() => {
     dispatch(getReferral(id));
-  }, [id]);
+    if (referral?.createdAt) {
+      const createdAtDate = new Date(referral.createdAt);
+      const countdownDate = new Date(createdAtDate.getTime() + 24 * 60 * 60 * 1000); // 24 hours later
+
+      const updateCountdown = () => {
+        const now = new Date();
+        const difference = countdownDate - now;
+
+        if (difference > 0) {
+          const hours = Math.floor(difference / (1000 * 60 * 60));
+          const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+          setTimeRemaining(`${hours}h ${minutes}m ${seconds}s`);
+        } else {
+          setTimeRemaining('Expirée');
+        }
+      };
+
+      updateCountdown(); // Initial call to set the countdown immediately
+      const intervalId = setInterval(updateCountdown, 1000); // Update every second
+
+      return () => clearInterval(intervalId); // Cleanup on component unmount
+    }
+  }, [referral?.createdAt, id]);
+ 
 
   return (
     <Container sx={{ background: "white", borderRadius: 2, padding: 2 }}>
@@ -153,20 +178,69 @@ console.log(referral)
             >
               <Typography variant="h5">Info Client</Typography>
               <Typography variant="subtitle1">
-                Nom : {referral?.client.nom}
+                Nom : { referral?.status == "mondat" || referral?.senderId == userInfo?.id? referral?.client.nom : "*******"}
               </Typography>
               <Typography variant="subtitle1">
-                Email : {referral?.client.email}
+                Email : {referral?.status == "mondat" || referral?.senderId == userInfo.id? referral?.client.email : '*******'}
               </Typography>
               <Typography variant="subtitle1">
-                Télephone : {referral?.client.telephone}
+                Télephone : {referral?.status == "mondat" || referral?.senderId == userInfo.id ? referral?.client.telephone : '*******'}
               </Typography>
-              { referral?.senderId == userInfo.id ?("") : (  <Stack spacing={2} direction="row">
-                <Button variant="outlined" color="error">Rejeter</Button>
-      <Button variant="contained">Accepter</Button>
+
+              <Typography> { referral?.status == "mondat"  || referral?.senderId == userInfo.id?"": "Les informations de contact seront fournies après la signature de l'accord de commission."} </Typography>
+
+              { 
+  referral?.senderId === userInfo.id 
+  
+    ?  ( 
+      <> 
+      <Stack  direction="row" gap={1}>
+          <Typography variant="subtitle1">Status:</Typography>   
+          <Typography>
+            <Chip
+              label={referral?.status.charAt(0).toUpperCase() + referral?.status.slice(1)}
+              variant="contained"
+              sx={{
+                bgcolor: "primary.main",
+                color: "white"
+              }}
+            />
+          </Typography>
+        </Stack>
       
+      <Typography variant="subtitle1">
+    Temps restant: {timeRemaining}
+  </Typography></>)
+    : (
+      <Stack spacing={2} direction="column">
+      {referral?.status === "pending" ? (
+        <>
+                <Button variant="contained">Accepter</Button>
+          <Button variant="outlined" color="error">Rejeter</Button>
+  
+          <Typography variant="subtitle1">
+            Temps restant: {timeRemaining}
+          </Typography>
+        </>
+      ) : ( 
+        <Stack direction="row" gap={1} justifyContent="center" alignItems="center">
+          <Typography variant="subtitle1">Status:</Typography>   
+          <Typography>
+            <Chip
+              label={referral?.status.charAt(0).toUpperCase() + referral?.status.slice(1)}
+              variant="contained"
+              sx={{
+                bgcolor: "primary.main",
+                color: "white"
+              }}
+            />
+          </Typography>
+        </Stack>
+      )}
     </Stack>
-              )}
+      )
+}
+
              
               <Typography variant="caption">
                 Publiée le {formattedDate} - Ref : REF

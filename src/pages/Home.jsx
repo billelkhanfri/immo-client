@@ -22,9 +22,9 @@ function Home() {
               variant="h2"
               sx={{ mx: 4, textAlign: "center", color: "primary.main" }}
             >
-              Accueil connecté
+              Accueil 
             </Typography>
-            <Typography
+            {/* <Typography
               variant="h5"
               component={"h2"}
               sx={{ textAlign: { xs: "center", md: "start" } }}
@@ -36,7 +36,7 @@ function Home() {
                 key={referral.id}
                 offer={referral}
               />
-            ))}
+            ))} */}
           </>
         ) : (
           <Typography
