@@ -24,6 +24,13 @@ const referralSlice = createSlice({
         state.referrals[index] = action.payload;
       }
     },
+    updateReferralStatus(state, action) {
+      const { id, status } = action.payload;
+      const index = state.referrals.findIndex((ref) => ref.id === id);
+      if (index !== -1) {
+        state.referrals[index].status = status;
+      }
+    },
     deleteReferral(state, action) {
       state.referrals = state.referrals.filter(
         (ref) => ref.id !== action.payload.id

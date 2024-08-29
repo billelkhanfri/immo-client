@@ -69,6 +69,30 @@ export function updateReferral(id, referral) {
   };
 }
 
+
+
+// PATCH - Update Referral Status
+export function updateReferralStatus(id, status) {
+  return async (dispatch, getState) => {
+    try {
+      const { data } = await request.patch(
+        `/api/referrals/${id}/status`,
+        { status },
+        {
+          headers: {
+            Authorization: "Bearer " + getState().auth.user.token,
+          },
+        }
+      );
+      dispatch(referralActions.updateReferralStatus({ id, status: data.status }));
+    } catch (error) {
+      toast.error(error.response.data.message);
+      console.log(error.response.data.message);
+    }
+  };
+}
+
+
 // DELETE - Delete a Referral
 export function deleteReferral(id) {
   return async (dispatch, getState) => {

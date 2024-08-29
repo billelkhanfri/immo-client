@@ -20,6 +20,8 @@ import {
 } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { getReferral } from "../redux/apiCalls/referralApiCall"; // Update the path according to your project structure
+import { updateReferralStatus } from "../redux/apiCalls/referralApiCall"; // Adjust the path as necessary
+
 import Chip from '@mui/material/Chip';
 
 function formatDate(dateString) {
@@ -40,7 +42,7 @@ function Offer() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const { referral } = useSelector((state) => state.referrals);
-console.log(referral)
+
   const date = referral?.createdAt;
   const formattedDate = formatDate(date);
   const [timeRemaining, setTimeRemaining] = useState('');
@@ -72,7 +74,17 @@ console.log(referral)
     }
   }, [referral?.createdAt, id]);
  
+  const handleAccept = () => {
+  
+    dispatch(updateReferralStatus(id, "attribue"));
+    dispatch(getReferral(id));
+  };
 
+  const handleReject = () => {
+    
+    dispatch(updateReferralStatus(id, "rejected"));
+    dispatch(getReferral(id));
+  };
   return (
     <Container sx={{ background: "white", borderRadius: 2, padding: 2 }}>
       <Button
@@ -119,7 +131,7 @@ console.log(referral)
           <Typography variant="h5" paddingTop={2} paddingBottom={2}>
             Information Géneral
           </Typography>
-{ referral?.senderId == userInfo.id ? ( <CardHeader
+{ referral?.senderId == userInfo.id  && referral?.status !== "Open"? ( <CardHeader
         avatar={
           <Avatar  aria-label="recipe"  sx={{ width: 56, height: 56 }} src ={referral?.receiver.Profile.imageUrl}>
         
@@ -127,7 +139,7 @@ console.log(referral)
         }
       
         title= "Agent partener"
-        subheader = {referral?.receiver.firstName+ " " + referral?.receiver.lastName + " / "   + referral?.sender.organisation.toUpperCase()} 
+        subheader = {referral?.receiver.firstName+ " " + referral?.receiver.lastName + " / "   + referral?.receiver.organisation.toUpperCase()} 
        
       />):( <CardHeader
         avatar={
@@ -189,57 +201,43 @@ console.log(referral)
 
               <Typography> { referral?.status == "mondat"  || referral?.senderId == userInfo.id?"": "Les informations de contact seront fournies après la signature de l'accord de commission."} </Typography>
 
-              { 
-  referral?.senderId === userInfo.id 
-  
-    ?  ( 
-      <> 
-      <Stack  direction="row" gap={1}>
-          <Typography variant="subtitle1">Status:</Typography>   
-          <Typography>
-            <Chip
-              label={referral?.status.charAt(0).toUpperCase() + referral?.status.slice(1)}
-              variant="contained"
-              sx={{
-                bgcolor: "primary.main",
-                color: "white"
-              }}
-            />
-          </Typography>
-        </Stack>
-      
-      <Typography variant="subtitle1">
-    Temps restant: {timeRemaining}
-  </Typography></>)
-    : (
-      <Stack spacing={2} direction="column">
-      {referral?.status === "pending" ? (
+ { 
+  <Stack spacing={referral?.senderId === userInfo.id ? 1 : 2} direction={referral?.senderId === userInfo.id ? "row" : "column"}>
+    <Stack direction="row" gap={1}  alignItems="center">
+      <Typography variant="subtitle1">Status:</Typography>   
+      <Typography>
+        <Chip
+          label={referral?.status.charAt(0).toUpperCase() + referral?.status.slice(1)}
+          variant="contained"
+          sx={{
+            bgcolor: referral?.status === "rejected"?"red" : "primary.main",
+            color: "white"
+          }}
+        />
+      </Typography>
+    </Stack>
+
+    {referral?.status === "pending" && (
+      referral?.senderId === userInfo.id ? (
+        <Typography variant="subtitle1">
+          Temps restant: {timeRemaining}
+        </Typography>
+      ) : (
         <>
-                <Button variant="contained">Accepter</Button>
-          <Button variant="outlined" color="error">Rejeter</Button>
-  
+          <Button variant="contained" onClick={handleAccept} disabled={timeRemaining === "Expirée"}>Accepter</Button>
+          <Button variant="outlined" color="error" onClick={handleReject} disabled={timeRemaining === "Expirée"}>Rejeter</Button>
           <Typography variant="subtitle1">
-            Temps restant: {timeRemaining}
+            Temps restant: 
+            <Chip variant="contained" label={timeRemaining} 
+              sx={{ bgcolor: "red", color: "white" }} 
+            /> 
           </Typography>
         </>
-      ) : ( 
-        <Stack direction="row" gap={1} justifyContent="center" alignItems="center">
-          <Typography variant="subtitle1">Status:</Typography>   
-          <Typography>
-            <Chip
-              label={referral?.status.charAt(0).toUpperCase() + referral?.status.slice(1)}
-              variant="contained"
-              sx={{
-                bgcolor: "primary.main",
-                color: "white"
-              }}
-            />
-          </Typography>
-        </Stack>
-      )}
-    </Stack>
       )
+    )}
+  </Stack>
 }
+
 
              
               <Typography variant="caption">
