@@ -50,7 +50,7 @@ useEffect(()=> {
     dispatch(createReferral(referralData));
     navigate("/mes-offres");
   };
-console.log(nature)
+
   return (
     <Container sx={{ backgroundColor: "#FFFFFF", borderRadius: 2, padding: 2 }}>
       <Typography
