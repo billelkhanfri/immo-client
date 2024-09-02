@@ -17,7 +17,8 @@ import {
 } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { getReferral, updateReferralStatus } from "../redux/apiCalls/referralApiCall";
-import { createReferralRequest, getAllRequests,getRequest } from "../redux/apiCalls/requestApiCall";
+import { createReferralRequest, getAllRequests,getRequest, updateRequestStatus } from "../redux/apiCalls/requestApiCall";
+import request from "../utils/request";
 
 function formatDate(dateString) {
   const date = new Date(dateString);
@@ -35,15 +36,21 @@ function Offer() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const { referral } = useSelector((state) => state.referrals);
-  const request = useSelector((state)=> state.requests.request)
-console.log(request)
-  const [timeRemaining, setTimeRemaining] = useState("");
+  const {request, requests} = useSelector((state)=> state.requests)
 
+  const [timeRemaining, setTimeRemaining] = useState("");
+useEffect (()=> {
+  dispatch(getRequest(id))
+  console.log(request)
+}, [])
   useEffect(() => {
     dispatch(getReferral(id));
+    dispatch(getReferral(id));
+  
   }, [dispatch, id]);
 
   useEffect(() => {
+ 
     if (referral?.createdAt) {
       const createdAtDate = new Date(referral.createdAt);
       const countdownDate = new Date(createdAtDate.getTime() + 24 * 60 * 60 * 1000);
@@ -76,17 +83,29 @@ console.log(request)
 
   const handleReject = () => {
     dispatch(updateReferralStatus(id, "rejected"));
-    dispatch(getReferral(id));
+   
   };
 
   const handleRequest = () => {
     dispatch(createReferralRequest(referral?.id));
-    dispatch(getAllRequests())
+    dispatch(getReferral(id));
+  
   };
+  const handleAcceptRequest = () => {
+    dispatch(updateRequestStatus(request?.id, "accepted"));
+    dispatch(getReferral(id));
+  };
+
+  const handleRejectRequest = () => {
+    dispatch(updateRequestStatus(request?.id, "rejected"));
+   
+  };
+
 
   const isSender = referral?.senderId === userInfo.id;
   const isReceiver = referral?.receiverId === userInfo.id;
   const isOpen = referral?.receiverId === null;
+   const isRequested = request?.referralId === id
 
   const renderReferralStatus = () => (
     <Stack spacing={isSender ? 1 : 2} direction={isSender ? "row" : "column"}>
@@ -132,19 +151,29 @@ console.log(request)
     let subheader = "Non attribué";
 
     if (isSender) {
-      avatarSrc = referral?.receiver?.Profile?.imageUrl || "";
-      subheader = isOpen ? <Button variant="contained">Ajouter un récepteur</Button> : `${referral?.receiver?.firstName} ${referral?.receiver?.lastName} / ${referral?.receiver?.organisation?.toUpperCase()}`;
-    } else if (isReceiver) {
+      avatarSrc = referral?.receiver?.Profile?.imageUrl || "" ||request?.requester?.Profile.imageUrl ;
+      subheader = isOpen && !isRequested ? <Button variant="contained">Ajouter un récepteur</Button> :  ` ${request?.requester?.firstName} ${request?.requester?.lastName} / ${request?.requester?.organisation?.toUpperCase()}` ;
+    } else if (isReceiver || isOpen) {
       avatarSrc = referral?.sender?.Profile?.imageUrl || "";
       subheader = `${referral?.sender?.firstName} ${referral?.sender?.lastName} / ${referral?.sender?.organisation?.toUpperCase()}`;
     }
 
     return (
+      <> 
       <CardHeader
         avatar={<Avatar aria-label="recipe" sx={{ width: 56, height: 56 }} src={avatarSrc} />}
         title={title}
         subheader={subheader}
       />
+      {isOpen && isSender && isRequested && (<Stack display= "flex" flexDirection="row" gap={1} mt={1}> 
+        <Button variant="contained" onClick={handleAcceptRequest} disabled={timeRemaining === "Expirée"}>
+      Accepter
+    </Button>
+    <Button variant="outlined" color="error" onClick={handleRejectRequest} disabled={timeRemaining === "Expirée"}>
+      Rejeter
+    </Button></Stack>)}
+     
+    </>
     );
   };
 
@@ -206,9 +235,14 @@ console.log(request)
 
           {renderCardHeader()}
 
-          {isOpen && !isSender && (
+          {isOpen && !isSender && !isRequested && (
             <Button variant="contained" onClick={handleRequest}>
               Demander ce referral
+            </Button>
+          )}
+            {isOpen && !isSender && isRequested  &&(
+            <Button variant="contained" disabled>
+            DEMANDE EN ATTENTE 
             </Button>
           )}
 
