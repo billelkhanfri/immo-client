@@ -122,7 +122,7 @@ useEffect(()=> {
             <Controller
               name="natureDuContact"
               control={control}
-              defaultValue=""
+              defaultValue="direct"
               render={({ field }) => (
                 <RadioGroup
                 

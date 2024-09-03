@@ -31,7 +31,6 @@ export function getReferral(id) {
       dispatch(referralActions.getReferral(data));
     } catch (error) {
       toast.error(error.response.data.message);
-      console.log(error.response.data.message);
     }
   };
 }
@@ -69,8 +68,6 @@ export function updateReferral(id, referral) {
   };
 }
 
-
-
 // PATCH - Update Referral Status
 export function updateReferralStatus(id, status) {
   return async (dispatch, getState) => {
@@ -84,14 +81,15 @@ export function updateReferralStatus(id, status) {
           },
         }
       );
-      dispatch(referralActions.updateReferralStatus({ id, status: data.status }));
+      dispatch(
+        referralActions.updateReferralStatus({ id, status: data.status })
+      );
     } catch (error) {
       toast.error(error.response.data.message);
       console.log(error.response.data.message);
     }
   };
 }
-
 
 // DELETE - Delete a Referral
 export function deleteReferral(id) {

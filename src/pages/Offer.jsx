@@ -18,7 +18,6 @@ import {
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { getReferral, updateReferralStatus } from "../redux/apiCalls/referralApiCall";
 import { createReferralRequest, getAllRequests,getRequest, updateRequestStatus } from "../redux/apiCalls/requestApiCall";
-import request from "../utils/request";
 
 function formatDate(dateString) {
   const date = new Date(dateString);
@@ -39,26 +38,29 @@ function Offer() {
   const {request, requests} = useSelector((state)=> state.requests)
 
   const [timeRemaining, setTimeRemaining] = useState("");
-useEffect (()=> {
-  dispatch(getRequest(id))
-  console.log(request)
-}, [])
+
   useEffect(() => {
     dispatch(getReferral(id));
-    dispatch(getReferral(id));
+    dispatch(getRequest(id))
   
   }, [dispatch, id]);
 
+  // Re-fetch request when its status changes
   useEffect(() => {
- 
+    if (request?.status) {
+      dispatch(getRequest(id)); // Fetch updated request after status change
+      dispatch(getReferral(id));
+    }
+  }, [dispatch, id, request?.status]);
+  useEffect(() => {
     if (referral?.createdAt) {
       const createdAtDate = new Date(referral.createdAt);
       const countdownDate = new Date(createdAtDate.getTime() + 24 * 60 * 60 * 1000);
-
+  
       const updateCountdown = () => {
         const now = new Date();
         const difference = countdownDate - now;
-
+  
         if (difference > 0) {
           const hours = Math.floor(difference / (1000 * 60 * 60));
           const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
@@ -68,32 +70,37 @@ useEffect (()=> {
           setTimeRemaining("Expirée");
         }
       };
-
+  
       updateCountdown();
       const intervalId = setInterval(updateCountdown, 1000);
-
+  
       return () => clearInterval(intervalId);
     }
-  }, [referral?.createdAt]);
-
-  const handleAccept = () => {
-    dispatch(updateReferralStatus(id, "attribue"));
-    dispatch(getReferral(id));
-  };
-
-  const handleReject = () => {
-    dispatch(updateReferralStatus(id, "rejected"));
-   
-  };
-
-  const handleRequest = () => {
-    dispatch(createReferralRequest(referral?.id));
-    dispatch(getReferral(id));
+  }, [referral?.createdAt]); // referral?.createdAt is the only dependency
   
+  const handleRequest = async () => {
+    await dispatch(createReferralRequest(referral?.id));
+    await dispatch(getReferral(id));
+    await dispatch(getRequest(id)); // Fetch updated request after referral request
   };
-  const handleAcceptRequest = () => {
-    dispatch(updateRequestStatus(request?.id, "accepted"));
-    dispatch(getReferral(id));
+  
+
+  const handleReject = async () => {
+    await dispatch(updateReferralStatus(id, "rejected"));
+    // No need to refetch referral if nothing changes
+  };
+  const handleAccept = async () => {
+    await dispatch(updateReferralStatus(id, "attribue"));
+    await dispatch(getReferral(id)); // Ensure the state is updated and fetched
+ };
+ 
+  
+
+  const handleAcceptRequest =  async() => {
+    await dispatch(updateRequestStatus(request?.id, "accepted"));
+   await dispatch(getReferral(id));
+   await dispatch(getRequest(id)); // Fetch updated request after referral request
+
   };
 
   const handleRejectRequest = () => {
@@ -216,7 +223,7 @@ useEffect (()=> {
           <Chip
             label={`${referral?.typeDeReferral.charAt(0).toUpperCase()}${referral?.typeDeReferral.slice(1)}`}
             variant="contained"
-            sx={{ mt: 4, bgcolor: "secondary.main" }}
+            sx={{ mt: 4, bgcolor: "secondary.main", color:"white" }}
           />
 
           <Typography component={"div"} sx={{ display: "flex", gap: 1, my: 1 }}>

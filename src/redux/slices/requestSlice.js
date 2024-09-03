@@ -16,14 +16,14 @@ const referralRequestSlice = createSlice({
     getRequest(state, action) {
       state.request = action.payload;
     },
-    updateRequestStatus(state,action){
-      const {id, status} = action.payload;
-      const index =state.requests.findIndex((ref) => ref.id === id);
+    updateRequestStatus(state, action) {
+      const { id, status } = action.payload;
+      const index = state.requests.findIndex((ref) => ref.id === id);
       if (index !== -1) {
-        state.requests[index.status] = status;
+         state.requests[index] = { ...state.requests[index], status }; // Return a new object
       }
-
-    }
+   }
+   
   },
 });
 

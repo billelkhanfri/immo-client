@@ -57,7 +57,6 @@ export function getRequest(id) {
       dispatch(referralRequestActions.getRequest(data));
     } catch (error) {
       toast.error(error.response.data.message);
-      console.log(error.response.data.message);
     }
   };
 }
@@ -80,7 +79,6 @@ export function updateRequestStatus(id, status) {
       );
     } catch (error) {
       toast.error(error.response.data.message);
-      console.log(error.response.data.message);
     }
   };
 }

@@ -9,7 +9,7 @@ import ReferralCard from "../components/ReferralCard"
 function Referrals() {
     const dispatch = useDispatch();
     const referrals = useSelector((state)=> state.referrals.referrals)
-    console.log(referrals)
+
 
     useEffect(()=> {
         dispatch(getAllReferrals());
