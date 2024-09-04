@@ -3,9 +3,10 @@ import { createSlice } from "@reduxjs/toolkit";
 const referralRequestSlice = createSlice({
   name: "requests",
   initialState: {
-    requests: null, // Initialisation avec un tableau vide
+    requests: [], // Initialized as an empty array
     request: null,
   },
+  
   reducers: {
     createReferralRequest(state, action) {
       state.requests.push(action.payload); // Ajout de la nouvelle demande au tableau des requests
@@ -20,9 +21,10 @@ const referralRequestSlice = createSlice({
       const { id, status } = action.payload;
       const index = state.requests.findIndex((ref) => ref.id === id);
       if (index !== -1) {
-         state.requests[index] = { ...state.requests[index], status }; // Return a new object
+        state.requests[index] = { ...state.requests[index], status };
       }
-   }
+    }
+    
    
   },
 });

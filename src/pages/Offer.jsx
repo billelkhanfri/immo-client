@@ -18,6 +18,7 @@ import {
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { getReferral, updateReferralStatus } from "../redux/apiCalls/referralApiCall";
 import { createReferralRequest, getAllRequests,getRequest, updateRequestStatus } from "../redux/apiCalls/requestApiCall";
+import StepperComponent from "../components/Stepper";
 
 function formatDate(dateString) {
   const date = new Date(dateString);
@@ -30,14 +31,19 @@ function formatDate(dateString) {
 }
 
 function Offer() {
+ 
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const navigate = useNavigate();
   const { id } = useParams();
   const dispatch = useDispatch();
   const { referral } = useSelector((state) => state.referrals);
   const {request, requests} = useSelector((state)=> state.requests)
-
+  const isSender = referral?.senderId === userInfo.id;
+  const isReceiver = referral?.receiverId === userInfo.id;
+  const isOpen = referral?.receiverId === null;
+   const isRequested = request?.referralId === id
   const [timeRemaining, setTimeRemaining] = useState("");
+  const [requestStatus, setRequestStatus] = useState(request?.status);
 
   useEffect(() => {
     dispatch(getReferral(id));
@@ -50,6 +56,7 @@ function Offer() {
     if (request?.status) {
       dispatch(getRequest(id)); // Fetch updated request after status change
       dispatch(getReferral(id));
+     
     }
   }, [dispatch, id, request?.status]);
   useEffect(() => {
@@ -87,19 +94,21 @@ function Offer() {
 
   const handleReject = async () => {
     await dispatch(updateReferralStatus(id, "rejected"));
-    // No need to refetch referral if nothing changes
+    await dispatch(getReferral(id)); 
   };
   const handleAccept = async () => {
     await dispatch(updateReferralStatus(id, "attribue"));
     await dispatch(getReferral(id)); // Ensure the state is updated and fetched
+
  };
  
   
 
   const handleAcceptRequest =  async() => {
     await dispatch(updateRequestStatus(request?.id, "accepted"));
-   await dispatch(getReferral(id));
-   await dispatch(getRequest(id)); // Fetch updated request after referral request
+    await dispatch(getRequest(id)); // Fetch updated request after referral request
+
+
 
   };
 
@@ -108,11 +117,7 @@ function Offer() {
    
   };
 
-
-  const isSender = referral?.senderId === userInfo.id;
-  const isReceiver = referral?.receiverId === userInfo.id;
-  const isOpen = referral?.receiverId === null;
-   const isRequested = request?.referralId === id
+ 
 
   const renderReferralStatus = () => (
     <Stack spacing={isSender ? 1 : 2} direction={isSender ? "row" : "column"}>
@@ -172,13 +177,45 @@ function Offer() {
         title={title}
         subheader={subheader}
       />
-      {isOpen && isSender && isRequested && (<Stack display= "flex" flexDirection="row" gap={1} mt={1}> 
-        <Button variant="contained" onClick={handleAcceptRequest} disabled={timeRemaining === "Expirée"}>
-      Accepter
-    </Button>
-    <Button variant="outlined" color="error" onClick={handleRejectRequest} disabled={timeRemaining === "Expirée"}>
-      Rejeter
-    </Button></Stack>)}
+      {isOpen && isSender && isRequested && (
+    <Stack display="flex" flexDirection="row" gap={1} mt={1}>
+        {requestStatus === "accepted" ? (
+            <Typography variant="body1" color="success.main">
+              Le referral a été attribué avec succès.
+            </Typography>
+        ) : requestStatus === "rejected" ? (
+            <Typography variant="body1" color="error.main">
+                referral rejeté.
+            </Typography>
+        ) : (
+            <>
+                <Button
+                    variant="contained"
+                    onClick={() => {
+                        handleAcceptRequest();
+                        setRequestStatus("accepted");
+                       
+                    }}
+                    disabled={timeRemaining === "Expirée"}
+                >
+                    Accepter
+                </Button>
+                <Button
+                    variant="outlined"
+                    color="error"
+                    onClick={() => {
+                        handleRejectRequest();
+                        setRequestStatus("rejected");
+                    }}
+                    disabled={timeRemaining === "Expirée"}
+                >
+                    Rejeter
+                </Button>
+            </>
+        )}
+    </Stack>
+)}
+
      
     </>
     );
@@ -285,6 +322,8 @@ function Offer() {
           </Card>
         </Grid>
       </Grid>
+
+      <StepperComponent referral = {referral}></StepperComponent>
     </Container>
   );
 }

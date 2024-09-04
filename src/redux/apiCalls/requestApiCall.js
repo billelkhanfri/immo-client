@@ -77,8 +77,10 @@ export function updateRequestStatus(id, status) {
       dispatch(
         referralRequestActions.updateRequestStatus({ id, status: data.status })
       );
+   
     } catch (error) {
       toast.error(error.response.data.message);
+   
     }
   };
 }
