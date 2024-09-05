@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllUsers } from "../redux/apiCalls/userApiCall"; 
 import UserCard from "../components/UserCard";
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Unstable_Grid2';
+import Grid from '@mui/material/Grid2';
 import { Container, Typography } from "@mui/material";
 
 function Reseau() {

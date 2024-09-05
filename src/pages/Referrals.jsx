@@ -2,7 +2,7 @@ import {useEffect} from "react"
 import { useSelector, useDispatch } from "react-redux"
 import {getAllReferrals} from "../redux/apiCalls/referralApiCall"
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Unstable_Grid2';
+import Grid from '@mui/material/Grid2';
 import { Container, Typography } from "@mui/material";
 import ReferralCard from "../components/ReferralCard"
 

@@ -26,7 +26,7 @@ function SentByUser() {
   // Filter referrals to include only those with senderId matching userId
   const filteredReferrals =
     referrals?.filter((referral) => referral.senderId === user?.id) || [];
-
+console.log(referrals)
   // Determine which referrals to display
   const displayedReferrals = showAll
     ? filteredReferrals

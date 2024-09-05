@@ -93,11 +93,11 @@ function Offer() {
   
 
   const handleReject = async () => {
-    await dispatch(updateReferralStatus(id, "rejected"));
+    await dispatch(updateReferralStatus(id, "rejeté"));
     await dispatch(getReferral(id)); 
   };
   const handleAccept = async () => {
-    await dispatch(updateReferralStatus(id, "attribue"));
+    await dispatch(updateReferralStatus(id, "attribué"));
     await dispatch(getReferral(id)); // Ensure the state is updated and fetched
 
  };
@@ -127,13 +127,13 @@ function Offer() {
           label={referral?.status.charAt(0).toUpperCase() + referral?.status.slice(1)}
           variant="contained"
           sx={{
-            bgcolor: referral?.status === "rejected" ? "red" : "primary.main",
+            bgcolor: referral?.status === "rejeté" ? "#d32f2f" : "primary.main",
             color: "white",
           }}
         />
       </Stack>
 
-      {referral?.status === "pending" && (
+      {referral?.status === "en attente" && (
         isSender ? (
           <Typography variant="subtitle1">Temps restant: {timeRemaining}</Typography>
         ) : (
@@ -222,7 +222,7 @@ function Offer() {
   };
 
   const renderClientInfo = () => {
-    const canViewClientInfo = referral?.status === "mondat" || isSender;
+    const canViewClientInfo = referral?.status === "mandat" || isSender;
     return (
       <CardContent sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
         <Typography variant="h5">Info Client</Typography>

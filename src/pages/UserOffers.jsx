@@ -1,17 +1,36 @@
 import {
   BottomNavigation,
-  BottomNavigationAction,
+
   Box,
   Container,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import  { useEffect, useState } from "react";
+
+
 import SentByUser from "../components/SentByUser";
 import RecievedByUser from "../components/RecievedByUser";
-
+import BottomNavigationAction from '@mui/material/BottomNavigationAction';
+import Badge from '@mui/material/Badge';
+import { useDispatch, useSelector } from "react-redux";
+import { getAllReferrals } from "../redux/apiCalls/referralApiCall";
 function UserOffers() {
   const [value, setValue] = useState(0);
+  const dispatch = useDispatch(); // Redux dispatch function
+  const { referrals } = useSelector((state) => state.referrals);
+  // Fetch user data on component mount
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
+
+  // Fetch referral data on component mount
+  useEffect(() => {
+    dispatch(getAllReferrals());
+  }, [dispatch]);
+
+  const sentReferrals =
+    referrals?.filter((referral) => referral.senderId === userInfo?.id) ;
+console.log(sentReferrals.length)
+ const receivedReferral = referrals?.filter((r)=> r.receiverId === userInfo?.id)
   return (
     <Container sx={{ backgroundColor: "#FFFFFF", borderRadius: 2, padding: 2 }}>
       <Typography
@@ -32,9 +51,37 @@ function UserOffers() {
             setValue(newValue);
           }}
         >
-          <BottomNavigationAction label="Mes offres envoyées" />
-          <BottomNavigationAction label="Mes offres reçues" />
-          <BottomNavigationAction label="Mes Offres Terminées" />
+    <BottomNavigationAction
+      label={
+        <Box>
+          <Badge
+           badgeContent={sentReferrals?.length }
+           color="error"
+            sx={{
+              '.MuiBadge-badge': {
+                top: -5,
+              },
+            }}
+          >
+            Mes offres envoyées
+          </Badge>
+        </Box>
+      }
+    />
+          <BottomNavigationAction label=  {   <Badge badgeContent= {receivedReferral?.length} color="error"  sx={{
+              '.MuiBadge-badge': {
+                top: -5,
+              },
+            }}>
+          Mes offres reçues
+    </Badge>} />
+          <BottomNavigationAction label= { <Badge badgeContent={4}  color="error"  sx={{
+              '.MuiBadge-badge': {
+                top: -5,
+              },
+            }}>
+          Mes Offres Terminées
+    </Badge> } />
         </BottomNavigation>
         <Box mt={2}>
           {value === 0 && <SentByUser />}

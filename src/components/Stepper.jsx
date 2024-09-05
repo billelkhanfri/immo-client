@@ -4,44 +4,41 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Typography from '@mui/material/Typography';
 
-
 const steps = [
-  "envoyé",      
-  "en attente",  
-  "attribué",    
-  "pourparlers", 
-  "mandat",      
-  "compromis",   
-  "acte",        
-        
-  
+  "envoyé",
+  "en attente",
+  "attribué",
+  "pourparlers",
+  "mandat",
+  "compromis",
+  "acte",
 ];
 
 function StepperComponent({ referral }) {
-  // Find the index of the current status in the steps array
-  const baseSteps = referral?.status === "rejecté" ? [...steps, "rejeté"] : steps;
-
-  const activeStepIndex = baseSteps.indexOf(referral?.status);
+  // Function to check if the step is "attribué" and rejected
   const isStepFailed = (step) => {
-    return step === "rejecté";
+    return step === 2 && referral?.status === "rejeté";  // Mark the 3rd step (attribué) as failed only if rejected
   };
+
+  // Find the index of the current referral status in the steps array
+  const activeStepIndex =referral?.status !== "rejeté"? steps.indexOf(referral?.status) : 2;
+
   return (
     <Box sx={{ width: '100%' }}>
       <Stepper activeStep={activeStepIndex}>
-        {baseSteps.map((label, index) => {
+        {steps.map((label, index) => {
           const labelProps = {};
-          if (isStepFailed(activeStepIndex)) {
-            labelProps.optional = (
-              <Typography variant="caption" color="error">
-                Alert message
-              </Typography>
-            );
 
-            labelProps.error = true;
+          // Check if the current step has failed (attribué and rejected)
+          if (isStepFailed(index)) {
+            label = "non attribué"; // Change label to "non attribué"
+            labelProps.error = true; // Apply error styling
           }
 
+         
+
           return (
-            <Step key={label}>
+            <Step key={label} >
               <StepLabel {...labelProps}>{label}</StepLabel>
             </Step>
           );
