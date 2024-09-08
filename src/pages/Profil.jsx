@@ -27,9 +27,9 @@ import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 import { getUserByID, deleteUser } from "../redux/apiCalls/userApiCall";
 import { logoutUser } from "../redux/apiCalls/authApiCall";
 import {
-  updateProfileUser,
-  uploadProfilePicture,
-  deleteProfilePicture,
+ 
+  uploadProfilePicture, deleteProfilePicture
+ 
 } from "../redux/apiCalls/profileApiCall";
 import { getAllReferrals } from "../redux/apiCalls/referralApiCall";
 import SentByUser from "../components/SentByUser";
@@ -44,7 +44,8 @@ function Profil() {
 
   // State variables
   const [imgPreview, setImgPreview] = useState("");
-  const [openProfil, setOpenProfil] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+    const [openProfil, setOpenProfil] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [value, setValue] = useState(0);
   const [handleProfil, setHandleProfil] = useState(false);
@@ -57,19 +58,22 @@ function Profil() {
   const handleOpenDelete = () => setOpenDelete(true);
   const handleCloseDelete = () => setOpenDelete(false);
 
-  // Form submission handlers
-  const onSubmit = async (formData) => {
-    const formDataObj = new FormData();
-    formDataObj.append("photo", formData.photo[0]);
-    await dispatch(uploadProfilePicture(formDataObj));
-    dispatch(getUserByID(id));
-  };
-
   // Image handling
-  const handleImg = (e) => {
-    const file = e.target.files[0];
-    setImgPreview(URL.createObjectURL(file));
-  };
+const handleImg = (e) => {
+  const file = e.target.files[0];
+  setImgPreview(URL.createObjectURL(file));
+  setSelectedFile(file); // Save file for form submission
+};
+
+// Form submission handler
+const onSubmit = async (formData) => {
+  const formDataObj = new FormData();
+  formDataObj.append("image", selectedFile); // Use the file, not imgPreview
+  await dispatch(uploadProfilePicture(formDataObj));
+  dispatch(getUserByID(id));
+};
+
+ 
 
   const handleDeletePicture = async () => {
     setImgPreview("");
@@ -193,24 +197,11 @@ function Profil() {
                 }}
                 component={"div"}
               >
-                <form
-                  onSubmit={handleSubmit(onSubmit)}
-                  className="flex flex-col justify-center gap-2"
-                >
-                  <TextField
-                    type="file"
-                    {...register("photo")}
-                    onChange={handleImg}
-                  />
-                  <Button
-                    value="Update"
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                  >
-                    Modifier
-                  </Button>
-                </form>
+               <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col justify-center gap-2">
+  <TextField type="file" {...register("photo")} onChange={handleImg} />
+  <Button value="Update" type="submit" variant="contained" color="primary">Modifier</Button>
+</form>
+
                 <Button
                   onClick={handleDeletePicture}
                   variant="outlined"
