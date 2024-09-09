@@ -45,6 +45,7 @@ function Offer() {
    const isRequested = request?.referralId === id
   const [timeRemaining, setTimeRemaining] = useState("");
   const [requestStatus, setRequestStatus] = useState(request?.status);
+ 
 
   useEffect(() => {
     dispatch(getReferral(id));
@@ -126,7 +127,7 @@ function Offer() {
 
       {referral?.status === "en attente" && (
         isSender ? (
-          <Typography variant="subtitle1">Temps restant: {timeRemaining}</Typography>
+          <Box variant="subtitle1">Temps restant:{timeRemaining}</Box>
         ) : (
           <>
             <Button variant="contained" onClick={handleAccept} disabled={timeRemaining === "Expirée"}>
@@ -135,12 +136,12 @@ function Offer() {
             <Button variant="outlined" color="error" onClick={handleReject} disabled={timeRemaining === "Expirée"}>
               Rejeter
             </Button>
-            <Typography variant="subtitle1">
+            <Box variant="subtitle1">
             Temps restant: 
-            <Chip variant="contained" label={timeRemaining} 
+            {/* <Chip variant="contained" label={timeRemaining} 
               sx={{ bgcolor: "red", color: "white" }} 
-            /> 
-          </Typography>                  
+            />  */}
+          </Box>                  
             
           </>
         )
@@ -187,7 +188,6 @@ function Offer() {
                         setRequestStatus("accepted");
                        
                     }}
-                    disabled={timeRemaining === "Expirée"}
                 >
                     Accepter
                 </Button>
@@ -198,7 +198,6 @@ function Offer() {
                         handleRejectRequest();
                         setRequestStatus("rejected");
                     }}
-                    disabled={timeRemaining === "Expirée"}
                 >
                     Rejeter
                 </Button>
@@ -254,7 +253,7 @@ function Offer() {
         <Typography variant="h5">Info Client</Typography>
         <Typography variant="subtitle1">Nom : {canViewClientInfo ? referral?.client.nom : "*******"}</Typography>
         <Typography variant="subtitle1">Email : {canViewClientInfo ? referral?.client.email : "*******"}</Typography>
-        <Typography variant="subtitle1">Télephone : {canViewClientInfo ? referral?.client.telephone : "*******"}</Typography>
+        <Box variant="subtitle1">Télephone : {canViewClientInfo ? referral?.client.telephone : "*******"}</Box>
         {!canViewClientInfo && (
           <Typography>
             Les informations de contact seront fournies après la signature de l'accord de commission.
@@ -289,14 +288,14 @@ function Offer() {
             sx={{ mt: 4, bgcolor: "secondary.main", color:"white" }}
           />
 
-          <Typography component={"div"} sx={{ display: "flex", gap: 1, my: 1 }}>
+          <Box component={"div"} sx={{ display: "flex", gap: 1, my: 1 }}>
             <Divider orientation="vertical" variant="middle" flexItem />
             <Typography variant="subtitle1" sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
               Lieu : <SlLocationPin />
             </Typography>
             <Typography variant="subtitle1">{referral?.lieu}</Typography>
             <Divider orientation="vertical" variant="middle" flexItem />
-          </Typography>
+          </Box>
 
           <Divider />
           <Typography variant="h5" paddingTop={2} paddingBottom={2}>
@@ -316,43 +315,45 @@ function Offer() {
             </Button>
           )}
 
-          <Box container mt={5} spacing={2} size={6}>
+            <Box  mt={5} spacing={2} size={6}>
           <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
           <Grid size={{ xs: 6 }}>
-              <Typography color="rgba(0,0,0,0.6)" fontWeight="400">
+              <Box color="gray" fontWeight="400">
                 Prix du bien
-              </Typography>
-              <Typography>{referral?.price} €</Typography>
+              </Box>
+              {referral?.price} €
             </Grid>
           <Grid size={6}>
-              <Typography color="rgba(0,0,0,0.6)" fontWeight="400">
+              <Box color="gray" fontWeight="400">
                 Honnoraire
-              </Typography>
-              <Typography>{referral?.honnoraire} %</Typography>
+              </Box>
+              {referral?.honnoraire} %
             </Grid>
             <Grid size={{ xs: 6 }}>
-              <Typography color="rgba(0,0,0,0.6)" fontWeight="400">
-                Prix du bien
-              </Typography>
-              <Typography>{referral?.price} €</Typography>
+            <Box color="gray" fontWeight="400">
+            Prix du bien
+              </Box>
+              {referral?.price} €
             </Grid>
             <Grid size={6}>
-              <Typography color="rgba(0,0,0,0.6)" fontWeight="400">
+              <Box color="rgba(0,0,0,0.6)" fontWeight="400">
                 Nature du Contact
-              </Typography>
-              <Typography>{referral?.natureDuContact.charAt(0).toUpperCase() + referral?.natureDuContact.slice(1)}</Typography>
+              </Box>
+              {referral?.natureDuContact.charAt(0).toUpperCase() + referral?.natureDuContact.slice(1)}
             </Grid>
             </Grid>
-          </Box>
+          </Box>  
+          
         </Grid>
+        
 
         <Grid size={6}>
           <Card>
             {renderClientInfo()}
             {renderReferralStatus()}
-            <Typography variant="caption">
+            {/* <Typography variant="caption">
               Publiée le {formatDate(referral?.createdAt)} - Ref : REF{referral?.id.substring(0, 8)}
-            </Typography>
+            </Typography> */}
           </Card>
         </Grid>
       </Grid>
