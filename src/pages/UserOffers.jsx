@@ -29,7 +29,7 @@ function UserOffers() {
 
   const sentReferrals =
     referrals?.filter((referral) => referral.senderId === userInfo?.id) ;
-console.log(sentReferrals.length)
+
  const receivedReferral = referrals?.filter((r)=> r.receiverId === userInfo?.id)
   return (
     <Container sx={{ backgroundColor: "#FFFFFF", borderRadius: 2, padding: 2 }}>

@@ -12,6 +12,7 @@ export function createReferralRequest(referralId) {
 
       const { data } = await request.post(
         `/api/referrals/${referralId}/request`, // Correction de l'URL
+       
         {}, // Le corps de la requête est vide
         {
           headers: {

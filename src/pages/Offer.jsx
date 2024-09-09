@@ -9,12 +9,13 @@ import {
   CardContent,
   Button,
   Divider,
-  Grid,
+Box,
   Stack,
   Chip,
   Avatar,
   CardHeader,
 } from "@mui/material";
+import Grid from '@mui/material/Grid2';
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { getReferral, updateReferralStatus } from "../redux/apiCalls/referralApiCall";
 import { createReferralRequest, getAllRequests,getRequest, updateRequestStatus } from "../redux/apiCalls/requestApiCall";
@@ -121,17 +122,7 @@ function Offer() {
 
   const renderReferralStatus = () => (
     <Stack spacing={isSender ? 1 : 2} direction={isSender ? "row" : "column"}>
-      <Stack direction="row" gap={1} alignItems="center">
-        <Typography variant="subtitle1">Status:</Typography>
-        <Chip
-          label={referral?.status.charAt(0).toUpperCase() + referral?.status.slice(1)}
-          variant="contained"
-          sx={{
-            bgcolor: referral?.status === "rejeté" ? "#d32f2f" : "primary.main",
-            color: "white",
-          }}
-        />
-      </Stack>
+    
 
       {referral?.status === "en attente" && (
         isSender ? (
@@ -164,7 +155,7 @@ function Offer() {
 
     if (isSender) {
       avatarSrc = referral?.receiver?.Profile?.imageUrl || "" ||request?.requester?.Profile.imageUrl ;
-      subheader = isOpen && !isRequested ? <Button variant="contained">Ajouter un récepteur</Button> :  ` ${request?.requester?.firstName} ${request?.requester?.lastName} / ${request?.requester?.organisation?.toUpperCase()}` ;
+      subheader = isOpen && !isRequested ? subheader :  ` ${request?.requester?.firstName} ${request?.requester?.lastName} / ${request?.requester?.organisation?.toUpperCase()}` ;
     } else if (isReceiver || isOpen) {
       avatarSrc = referral?.sender?.Profile?.imageUrl || "";
       subheader = `${referral?.sender?.firstName} ${referral?.sender?.lastName} / ${referral?.sender?.organisation?.toUpperCase()}`;
@@ -214,9 +205,44 @@ function Offer() {
             </>
         )}
     </Stack>
-)}
+)
 
-     
+
+
+}
+{isOpen && isSender && !isRequested && (
+    <Stack display="flex" flexDirection="row" gap={1} mt={1}>
+        {requestStatus === "accepted" ? (
+            <Typography variant="body1" color="success.main">
+              Le referral a été attribué avec succès.
+            </Typography>
+        ) : requestStatus === "rejected" ? (
+            <Typography variant="body1" color="error.main">
+                referral rejeté.
+            </Typography>
+        ) : (
+            <>
+                <Button
+                    variant="contained"
+                    onClick={() => {
+                        handleAcceptRequest();
+                        setRequestStatus("accepted");
+                       
+                    }}
+                    
+                >
+                 Envoyer à un agent
+                </Button>
+              
+            </>
+        )}
+    </Stack>
+)
+
+
+
+}
+
     </>
     );
   };
@@ -255,8 +281,8 @@ function Offer() {
         <ArrowBackIosNewIcon />
       </Button>
 
-      <Grid container spacing={2}>
-        <Grid item xs={6}>
+      <Grid container spacing={2} m={5} >
+        <Grid size={6}>
           <Chip
             label={`${referral?.typeDeReferral.charAt(0).toUpperCase()}${referral?.typeDeReferral.slice(1)}`}
             variant="contained"
@@ -290,29 +316,37 @@ function Offer() {
             </Button>
           )}
 
-          <Grid>
-            <Grid padding="16px">
-              <Typography color="rgba(0,0,0,0.6)" fontWeight="600">
-                Honnoraire
-              </Typography>
-              <Typography>{referral?.honnoraire} %</Typography>
-            </Grid>
-            <Grid padding="16px">
-              <Typography color="rgba(0,0,0,0.6)" fontWeight="600">
+          <Box container mt={5} spacing={2} size={6}>
+          <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+          <Grid size={{ xs: 6 }}>
+              <Typography color="rgba(0,0,0,0.6)" fontWeight="400">
                 Prix du bien
               </Typography>
               <Typography>{referral?.price} €</Typography>
             </Grid>
-            <Grid padding="16px">
-              <Typography color="rgba(0,0,0,0.6)" fontWeight="600">
+          <Grid size={6}>
+              <Typography color="rgba(0,0,0,0.6)" fontWeight="400">
+                Honnoraire
+              </Typography>
+              <Typography>{referral?.honnoraire} %</Typography>
+            </Grid>
+            <Grid size={{ xs: 6 }}>
+              <Typography color="rgba(0,0,0,0.6)" fontWeight="400">
+                Prix du bien
+              </Typography>
+              <Typography>{referral?.price} €</Typography>
+            </Grid>
+            <Grid size={6}>
+              <Typography color="rgba(0,0,0,0.6)" fontWeight="400">
                 Nature du Contact
               </Typography>
               <Typography>{referral?.natureDuContact.charAt(0).toUpperCase() + referral?.natureDuContact.slice(1)}</Typography>
             </Grid>
-          </Grid>
+            </Grid>
+          </Box>
         </Grid>
 
-        <Grid item xs={6}>
+        <Grid size={6}>
           <Card>
             {renderClientInfo()}
             {renderReferralStatus()}
@@ -323,7 +357,9 @@ function Offer() {
         </Grid>
       </Grid>
 
-      <StepperComponent referral = {referral}></StepperComponent>
+<Divider></Divider>
+<Box m={5}>  <StepperComponent referral = {referral}></StepperComponent> </Box>
+    
     </Container>
   );
 }

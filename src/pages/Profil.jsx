@@ -33,6 +33,8 @@ import {
 } from "../redux/apiCalls/profileApiCall";
 import { getAllReferrals } from "../redux/apiCalls/referralApiCall";
 import SentByUser from "../components/SentByUser";
+import { ToastContainer} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 function Profil() {
   const { register, handleSubmit } = useForm(); // React Hook Form
@@ -66,11 +68,13 @@ const handleImg = (e) => {
 };
 
 // Form submission handler
-const onSubmit = async (formData) => {
+const onSubmit = async () => {
   const formDataObj = new FormData();
   formDataObj.append("image", selectedFile); // Use the file, not imgPreview
   await dispatch(uploadProfilePicture(formDataObj));
   dispatch(getUserByID(id));
+
+
 };
 
  
@@ -224,7 +228,7 @@ const onSubmit = async (formData) => {
           </div>
         </Typography>
       </Container>
-
+      <ToastContainer />
       <Grid
         container
         rowSpacing={1}

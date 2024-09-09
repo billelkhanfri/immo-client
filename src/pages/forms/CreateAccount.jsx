@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import React, { useEffect } from "react";
+import  { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useState } from "react";
 import cpiData from "../../assets/MOCK_DATA.json";
@@ -23,6 +23,7 @@ import { registerUser } from "../../redux/apiCalls/authApiCall";
 import swal from "sweetalert";
 import { authActions } from "../../redux/slices/authSlice"; // Import the actions
 import { ToastContainer } from "react-toastify";
+
 
 function CreateAccount() {
   const dispatch = useDispatch();

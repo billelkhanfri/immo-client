@@ -1,6 +1,8 @@
 import { profileActions } from "../slices/profileSlice";
 import { toast } from "react-toastify";
 import request from "../../utils/request";
+import { authActions } from "../slices/authSlice";
+
 
 // PUT - Update User
 export function updateProfileUser(id, formData) {
@@ -33,7 +35,16 @@ export function uploadProfilePicture(formData) {
           },
         }
       );
+      console.log(data.imageUrl)
       dispatch(profileActions.postProfilePicture(data));
+       dispatch(authActions.setUserPhoto(data.imageUrl))
+toast.success(data.message)
+       // modify the user in local storage with new photo
+
+       const user = JSON.parse(localStorage.getItem("userInfo"));
+       user.profilePhoto = data?.imageUrl;
+       localStorage.setItem("userInfo", JSON.stringify(user))
+
     } catch (error) {
       toast.error(error.response?.data?.message || "An error occurred");
       console.error("Upload Profile Picture Error:", error.response?.data);
