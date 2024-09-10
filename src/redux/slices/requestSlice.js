@@ -6,7 +6,7 @@ const referralRequestSlice = createSlice({
     requests: [], // Initialized as an empty array
     request: null,
   },
-  
+
   reducers: {
     createReferralRequest(state, action) {
       state.requests.push(action.payload); // Ajout de la nouvelle demande au tableau des requests
@@ -23,9 +23,7 @@ const referralRequestSlice = createSlice({
       if (index !== -1) {
         state.requests[index] = { ...state.requests[index], status };
       }
-    }
-    
-   
+    },
   },
 });
 

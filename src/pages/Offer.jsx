@@ -18,8 +18,9 @@ Box,
 import Grid from '@mui/material/Grid2';
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { getReferral, updateReferralStatus } from "../redux/apiCalls/referralApiCall";
-import { createReferralRequest, getAllRequests,getRequest, updateRequestStatus } from "../redux/apiCalls/requestApiCall";
+import { createReferralRequest,getRequest, getAllRequests, updateRequestStatus } from "../redux/apiCalls/requestApiCall";
 import StepperComponent from "../components/Stepper";
+import ReferralRequests from "../components/ReferralRequests";
 
 function formatDate(dateString) {
   const date = new Date(dateString);
@@ -44,9 +45,12 @@ function Offer() {
   const isOpen = referral?.receiverId === null;
    const isRequested = request?.referralId === id
   const [timeRemaining, setTimeRemaining] = useState("");
-  const [requestStatus, setRequestStatus] = useState(request?.status);
+  const isRequester = request?.requester.id === userInfo.id
  
-
+  useEffect(() => {
+   dispatch(getAllRequests())
+  
+  }, []);
   useEffect(() => {
     dispatch(getReferral(id));
     dispatch(getRequest(id))
@@ -58,6 +62,7 @@ function Offer() {
     if (request?.status) {
       dispatch(getRequest(id)); // Fetch updated request after status change
       dispatch(getReferral(id));
+   
      
     }
   }, [dispatch, id, request?.status]);
@@ -106,18 +111,7 @@ function Offer() {
  
   
 
-  const handleAcceptRequest =  async() => {
-    await dispatch(updateRequestStatus(request?.id, "accepted"));
-    await dispatch(getRequest(id)); // Fetch updated request after referral request
 
-
-
-  };
-
-  const handleRejectRequest = () => {
-    dispatch(updateRequestStatus(request?.id, "rejected"));
-   
-  };
 
  
 
@@ -138,9 +132,9 @@ function Offer() {
             </Button>
             <Box variant="subtitle1">
             Temps restant: 
-            {/* <Chip variant="contained" label={timeRemaining} 
+             <Chip variant="contained" label={timeRemaining} 
               sx={{ bgcolor: "red", color: "white" }} 
-            />  */}
+            />  
           </Box>                  
             
           </>
@@ -169,63 +163,16 @@ function Offer() {
         title={title}
         subheader={subheader}
       />
-      {isOpen && isSender && isRequested && (
-    <Stack display="flex" flexDirection="row" gap={1} mt={1}>
-        {requestStatus === "accepted" ? (
-            <Typography variant="body1" color="success.main">
-              Le referral a été attribué avec succès.
-            </Typography>
-        ) : requestStatus === "rejected" ? (
-            <Typography variant="body1" color="error.main">
-                referral rejeté.
-            </Typography>
-        ) : (
-            <>
-                <Button
-                    variant="contained"
-                    onClick={() => {
-                        handleAcceptRequest();
-                        setRequestStatus("accepted");
-                       
-                    }}
-                >
-                    Accepter
-                </Button>
-                <Button
-                    variant="outlined"
-                    color="error"
-                    onClick={() => {
-                        handleRejectRequest();
-                        setRequestStatus("rejected");
-                    }}
-                >
-                    Rejeter
-                </Button>
-            </>
-        )}
-    </Stack>
-)
-
-
-
-}
+  
 {isOpen && isSender && !isRequested && (
+  
     <Stack display="flex" flexDirection="row" gap={1} mt={1}>
-        {requestStatus === "accepted" ? (
-            <Typography variant="body1" color="success.main">
-              Le referral a été attribué avec succès.
-            </Typography>
-        ) : requestStatus === "rejected" ? (
-            <Typography variant="body1" color="error.main">
-                referral rejeté.
-            </Typography>
-        ) : (
-            <>
+      
+        
                 <Button
                     variant="contained"
                     onClick={() => {
-                        handleAcceptRequest();
-                        setRequestStatus("accepted");
+                      
                        
                     }}
                     
@@ -233,8 +180,8 @@ function Offer() {
                  Envoyer à un agent
                 </Button>
               
-            </>
-        )}
+        
+        
     </Stack>
 )
 
@@ -309,9 +256,14 @@ function Offer() {
               Demander ce referral
             </Button>
           )}
-            {isOpen && !isSender && isRequested  &&(
+            {isOpen && !isSender && isRequested  &&request?.status !== "rejected"&&(
             <Button variant="contained" disabled>
             DEMANDE EN ATTENTE 
+            </Button>
+          )}
+           {request?.status === "rejected"&& isRequester &&(
+            <Button variant="outlined" color="error" disabled>
+            <Typography color="error">demande non attribué </Typography>
             </Button>
           )}
 
@@ -351,13 +303,14 @@ function Offer() {
           <Card>
             {renderClientInfo()}
             {renderReferralStatus()}
-            {/* <Typography variant="caption">
+             <Typography variant="caption">
               Publiée le {formatDate(referral?.createdAt)} - Ref : REF{referral?.id.substring(0, 8)}
-            </Typography> */}
+            </Typography> 
           </Card>
         </Grid>
       </Grid>
-
+ 
+<ReferralRequests referral = {referral} requests= {requests}></ReferralRequests>
 <Divider></Divider>
 <Box m={5}>  <StepperComponent referral = {referral}></StepperComponent> </Box>
     
