@@ -32,6 +32,8 @@ function formatDate(dateString) {
   return `${day}/${month}/${year}`;
 }
 
+
+
 function Offer() {
  
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
@@ -45,8 +47,10 @@ function Offer() {
   const isOpen = referral?.receiverId === null;
    const isRequested = request?.referralId === id
   const [timeRemaining, setTimeRemaining] = useState("");
-  const isRequester = request?.requester.id === userInfo.id
+  const isRequester = request?.requesterId === userInfo.id
  
+  const filteredRequest =  requests.find((req) => req.requesterId === userInfo.id)
+  console.log(filteredRequest?.status)
   useEffect(() => {
    dispatch(getAllRequests())
   
@@ -164,7 +168,7 @@ function Offer() {
         subheader={subheader}
       />
   
-{isOpen && isSender && !isRequested && (
+{isOpen && isSender && request?.status !== "accepted" && (
   
     <Stack display="flex" flexDirection="row" gap={1} mt={1}>
       
@@ -251,17 +255,17 @@ function Offer() {
 
           {renderCardHeader()}
 
-          {isOpen && !isSender && !isRequested && (
+          {isOpen && !isSender && !isRequester && !filteredRequest &&(
             <Button variant="contained" onClick={handleRequest}>
               Demander ce referral
             </Button>
           )}
-            {isOpen && !isSender && isRequested  &&request?.status !== "rejected"&&(
+            {isOpen && !isSender &&  filteredRequest?.status == "pending" &&(
             <Button variant="contained" disabled>
             DEMANDE EN ATTENTE 
             </Button>
           )}
-           {request?.status === "rejected"&& isRequester &&(
+           {filteredRequest?.status === "rejected"&& isRequester && isRequested &&(
             <Button variant="outlined" color="error" disabled>
             <Typography color="error">demande non attribué </Typography>
             </Button>
@@ -309,10 +313,20 @@ function Offer() {
           </Card>
         </Grid>
       </Grid>
- 
-<ReferralRequests referral = {referral} requests= {requests}></ReferralRequests>
-<Divider></Divider>
-<Box m={5}>  <StepperComponent referral = {referral}></StepperComponent> </Box>
+ {isRequested && isSender && (
+  <> 
+  <ReferralRequests referral = {referral} requests= {requests}></ReferralRequests>
+  <Divider></Divider>
+  
+  
+  
+  </>)}
+
+
+{request?.status == "rejected" && isRequester ?(
+ ""
+
+) :  <Box m={5}>  <StepperComponent referral = {referral}></StepperComponent> </Box>}
     
     </Container>
   );

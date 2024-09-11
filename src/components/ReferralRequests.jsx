@@ -48,27 +48,26 @@ import {
 function ReferralRequests({referral, request,requests}) {
 
 
-    const [requestStatus, setRequestStatus] = useState("");
 
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const { id } = useParams();
     const dispatch = useDispatch();
     const isSender = referral?.senderId === userInfo.id;
-    const isReceiver = referral?.receiverId === userInfo.id;
-    const isOpen = referral?.receiverId === null;
-     const isRequested = request?.referralId === id;
-    
-   console.log(requestStatus)
+   
 
+const filterRequests =  requests?.filter((req) => req?.referralId === id)
     
 console.log(requests)
     
   return (
+
  
     <Box>
     {isSender &&   (
       <Grid container spacing={2}>
-         {requests?.map((req, index) => ( 
+
+       
+         {filterRequests?.map((req, index) => ( 
             <> 
         <Grid size={12}>
         <Item sx={{display:"flex"}}>
@@ -85,14 +84,15 @@ console.log(requests)
              
               <Grid size={6}sx={{display:"flex", alignItems:"center" , justifyContent:"flex-end"}} >
               <Stack display="flex" flexDirection="row" gap={5} >
-        {requestStatus === "accepted" || req?.referral.status === "attribué" ? (
-            <Typography variant="body1" color="success.main">
-             attribué 
-            </Typography>
-        ) : requestStatus === "rejected" || req?.status === "rejected" ?(
-            <Typography variant="body1" color="error.main">
-                referral rejeté.
-            </Typography>
+        {req?.referral.status === "attribué" && req?.status === "accepted" ? (
+          
+               <Chip variant="contained" label= "Attribué "
+               sx={{ bgcolor: "green", color: "white" ,width : "75px"}} 
+             /> 
+        ) :   req?.status === "rejected" ?(
+          <Chip variant="contained" label= "Rejeté "
+          sx={{ bgcolor: "red", color: "white" ,width : "75px" }} 
+        />
         ) : (
             <>
                <Button

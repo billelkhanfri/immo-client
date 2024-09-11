@@ -7,8 +7,11 @@ import {
 } from "@mui/material";
 import  { useEffect, useState } from "react";
 
+import {  getAllRequests } from "../redux/apiCalls/requestApiCall";
 
 import SentByUser from "../components/SentByUser";
+import RequestedByUser from "../components/RequestedByUser";
+
 import RecievedByUser from "../components/RecievedByUser";
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import Badge from '@mui/material/Badge';
@@ -21,11 +24,14 @@ function UserOffers() {
   // Fetch user data on component mount
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
+  const {requests} = useSelector((state)=> state.requests)
 
   // Fetch referral data on component mount
   useEffect(() => {
     dispatch(getAllReferrals());
+    dispatch(getAllRequests())
   }, [dispatch]);
+  const filteredRequest =  requests.filter((req) => req.requesterId === userInfo.id)
 
   const sentReferrals =
     referrals?.filter((referral) => referral.senderId === userInfo?.id) ;
@@ -75,22 +81,18 @@ function UserOffers() {
             }}>
           Mes offres reçues
     </Badge>} />
-          <BottomNavigationAction label= { <Badge badgeContent={4}  color="error"  sx={{
+          <BottomNavigationAction label= { <Badge badgeContent={filteredRequest?.length}  color="error"  sx={{
               '.MuiBadge-badge': {
                 top: -5,
               },
             }}>
-          Mes Offres Terminées
+         Mes Offres demandées
     </Badge> } />
         </BottomNavigation>
         <Box mt={2}>
           {value === 0 && <SentByUser />}
           {value === 1 && <RecievedByUser />}
-          {value === 2 && (
-            <Typography variant="h6" textAlign={"center"}>
-              Mes offres terminées
-            </Typography>
-          )}
+          {value === 2 && <RequestedByUser filteredRequest = {filteredRequest}/>}
         </Box>
       </Box>
     </Container>
