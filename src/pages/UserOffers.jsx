@@ -10,7 +10,6 @@ import  { useEffect, useState } from "react";
 import {  getAllRequests } from "../redux/apiCalls/requestApiCall";
 
 import SentByUser from "../components/SentByUser";
-import RequestedByUser from "../components/RequestedByUser";
 
 import RecievedByUser from "../components/RecievedByUser";
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
@@ -31,12 +30,16 @@ function UserOffers() {
     dispatch(getAllReferrals());
     dispatch(getAllRequests())
   }, [dispatch]);
-  const filteredRequest =  requests.filter((req) => req.requesterId === userInfo.id)
+  const filteredRequest =  requests.filter((req) => req.requesterId === userInfo.id).map((ref)=> ref.referral)
+  const requestData=  requests.filter((req) => req.requesterId === userInfo.id)
+
 
   const sentReferrals =
     referrals?.filter((referral) => referral.senderId === userInfo?.id) ;
 
  const receivedReferral = referrals?.filter((r)=> r.receiverId === userInfo?.id)
+
+ console.log(filteredRequest)
   return (
     <Container sx={{ backgroundColor: "#FFFFFF", borderRadius: 2, padding: 2 }}>
       <Typography
@@ -90,9 +93,9 @@ function UserOffers() {
     </Badge> } />
         </BottomNavigation>
         <Box mt={2}>
-          {value === 0 && <SentByUser />}
-          {value === 1 && <RecievedByUser />}
-          {value === 2 && <RequestedByUser filteredRequest = {filteredRequest}/>}
+          {value === 0 && <SentByUser sentReferrals = {sentReferrals}/>}
+          {value === 1 && <RecievedByUser receivedReferral = {receivedReferral}/>}
+          {value === 2 && <SentByUser sentReferrals = {filteredRequest} requestData = {requestData}/>}
         </Box>
       </Box>
     </Container>

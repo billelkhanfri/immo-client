@@ -56,7 +56,7 @@ function Navigation() {
 
   return (
     <>
-      <AppBar position="sticky" color="primary" elevation={0}>
+      <AppBar position="sticky" color="" elevation={0}>
         <Container>
           <Toolbar>
             <Typography

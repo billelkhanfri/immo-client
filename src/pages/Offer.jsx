@@ -50,7 +50,6 @@ function Offer() {
   const isRequester = request?.requesterId === userInfo.id
  
   const filteredRequest =  requests.find((req) => req.requesterId === userInfo.id)
-  console.log(filteredRequest?.status)
   useEffect(() => {
    dispatch(getAllRequests())
   
@@ -154,7 +153,9 @@ function Offer() {
 
     if (isSender) {
       avatarSrc = referral?.receiver?.Profile?.imageUrl || "" ||request?.requester?.Profile.imageUrl ;
-      subheader = isOpen && !isRequested ? subheader :  ` ${request?.requester?.firstName} ${request?.requester?.lastName} / ${request?.requester?.organisation?.toUpperCase()}` ;
+      subheader = !isOpen && !isRequested ? ` ${referral?.receiver?.firstName} ${referral?.receiver?.lastName} / ${referral?.receiver?.organisation?.toUpperCase()}` :  ` ${request?.requester?.firstName} ${request?.requester?.lastName} / ${request?.requester?.organisation?.toUpperCase()}` ;
+
+      // subheader = isOpen && !isRequested ? subheader :  ` ${request?.requester?.firstName} ${request?.requester?.lastName} / ${request?.requester?.organisation?.toUpperCase()}` ;
     } else if (isReceiver || isOpen) {
       avatarSrc = referral?.sender?.Profile?.imageUrl || "";
       subheader = `${referral?.sender?.firstName} ${referral?.sender?.lastName} / ${referral?.sender?.organisation?.toUpperCase()}`;

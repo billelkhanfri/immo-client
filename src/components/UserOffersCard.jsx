@@ -9,9 +9,21 @@ import {
 } from "@mui/material";
 import { Link } from "react-router-dom";
 
-const UserOffersCard = ({ offer }) => {
+const UserOffersCard = ({ offer, requests }) => {
   const [loading, setLoading] = useState(true);
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'))
+ const isSender = offer?.sender.id === userInfo.id
 
+ const request = requests?.find((e) => e.referralId === offer?.id) 
+ console.log(request)
+
+ const statusTranslation = {
+  pending: "En attente",
+  rejected: "Rejeté",
+  accepted: "Accepté",
+
+};
+ 
   useEffect(() => {
     // Simulate a loading delay
     const timer = setTimeout(() => setLoading(false), 300);
@@ -92,15 +104,21 @@ const UserOffersCard = ({ offer }) => {
     );
   }
 
-  const date = new Date(offer.createdAt);
-  const dateFormat = Intl.DateTimeFormat("fr-FR", {
-    dateStyle: "short",
-  }).format(date);
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    if (isNaN(date)) return "Invalid Date";
+  
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+  
 
   return (
     <Card
       component={Link}
-      to={`/offre/${offer.id}`}
+      to={`/offre/${offer?.id}`}
       variant="outlined"
       sx={{
         display: "flex",
@@ -148,12 +166,29 @@ const UserOffersCard = ({ offer }) => {
             gap: 1,
           }}
         >
+    
           <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            {offer.sender.organisation}
+            {offer?.sender.organisation}
           </Typography>
           <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            {dateFormat}
+          {formatDate(offer?.createdAt)}
           </Typography>
+          <Typography
+  sx={{ fontSize: 14 }}
+  color={
+    request?.status === "rejected"
+      ? "red"
+      : request?.status === "accepted"
+      ? "green"
+      : request?.status === "pending"
+      ? "orange"
+      : "#2a52be"
+  }
+  gutterBottom
+>
+  {statusTranslation[request?.status] || offer?.status}
+</Typography>
+
         </Box>
         <Box
           component={"div"}
@@ -178,7 +213,7 @@ const UserOffersCard = ({ offer }) => {
               textDecoration: "none", // Ensure no underline by default
             }}
           >
-            {offer.commentaire}
+            {offer?.commentaire}
           </Typography>
           <Button
             variant="outlined"
@@ -194,7 +229,8 @@ const UserOffersCard = ({ offer }) => {
             Voir l'offre
           </Button>
         </Box>
-        <Box
+       
+          {isSender && ( <Box
           component={"div"}
           sx={{
             width: "100%",
@@ -202,17 +238,15 @@ const UserOffersCard = ({ offer }) => {
             justifyContent: "flex-start",
             gap: 2,
           }}
-        >
-          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            {offer.typeDeReferral}
-          </Typography>
-          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            {offer.lieu}
-          </Typography>
-          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            {offer.status}
-          </Typography>
-        </Box>
+        ><Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+        {offer?.typeDeReferral}
+      </Typography>
+      <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+        {offer?.lieu}
+      </Typography>
+    
+    </Box> )}
+          
       </CardContent>
     </Card>
   );
