@@ -1,21 +1,17 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import {  useParams } from "react-router-dom";
 import {
-    Container,
-    Typography,
-    Card,
-    CardContent,
+
     Button,
-    Divider,
+  
   Box,
     Stack,
     Chip,
     Avatar,
     CardHeader,
   } from "@mui/material";
-  import { getReferral, updateReferralStatus } from "../redux/apiCalls/referralApiCall";
-  import { createReferralRequest,getRequest, getAllRequests, updateRequestStatus } from "../redux/apiCalls/requestApiCall";
+  import { getReferral } from "../redux/apiCalls/referralApiCall";
+  import { getRequest, getAllRequests, updateRequestStatus } from "../redux/apiCalls/requestApiCall";
   import { styled } from '@mui/material/styles';
   import Paper from '@mui/material/Paper';
   import Grid from '@mui/material/Grid2';
@@ -45,7 +41,7 @@ import {
 
 
   
-function ReferralRequests({referral, request,requests}) {
+function ReferralRequests({referral,requests}) {
 
 
 
@@ -57,7 +53,6 @@ function ReferralRequests({referral, request,requests}) {
 
 const filterRequests =  requests?.filter((req) => req?.referralId === id)
     
-console.log(requests)
     
   return (
 
@@ -97,11 +92,17 @@ console.log(requests)
             <>
                <Button
   variant="contained"
-  disabled={req?.referral.status === "attribué" || requestStatus === "accepted"} // Correctly using 'disabled' prop
+  disabled={req?.referral.status === "attribué" } // Correctly using 'disabled' prop
   onClick={async () => {
     await dispatch(updateRequestStatus(req?.id, "accepted"));
-    await dispatch(getRequest(id)); // Fetch updated request after referral request
-    setRequestStatus("accepted");
+     // Rejet des autres requêtes
+  const otherRequests = requests.filter((re) => re.id !== req?.id);
+  otherRequests.forEach(async (req) => {
+    await dispatch(updateRequestStatus(req.id, "rejected"));
+  });
+    await dispatch(getRequest(id));
+    await dispatch(getReferral(id)); // Mets à jour le referral
+    await dispatch(getAllRequests()); // Mets à jour les requêtes // Fetch updated request after referral request
   }}
 >
   Accepter
@@ -109,12 +110,11 @@ console.log(requests)
 
                 <Button
                     variant="outlined"
-                    disabled={req?.referral.status === "attribué" || requestStatus === "accepted"} // Correctly using 'disabled' prop
+                    disabled={req?.referral.status === "attribué" } // Correctly using 'disabled' prop
 
                     color="error"
                     onClick={ async () => {
                         await dispatch(updateRequestStatus(req?.id, "rejected"));
-                        setRequestStatus("rejected");
 
                     }}
                 >

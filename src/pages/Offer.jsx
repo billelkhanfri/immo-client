@@ -18,9 +18,12 @@ Box,
 import Grid from '@mui/material/Grid2';
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { getReferral, updateReferralStatus } from "../redux/apiCalls/referralApiCall";
-import { createReferralRequest,getRequest, getAllRequests, updateRequestStatus } from "../redux/apiCalls/requestApiCall";
+import { createReferralRequest,getRequest, getAllRequests } from "../redux/apiCalls/requestApiCall";
 import StepperComponent from "../components/Stepper";
 import ReferralRequests from "../components/ReferralRequests";
+import { getAllUsers } from "../redux/apiCalls/userApiCall";
+import UserAttributed from "../components/UserAttributed";
+
 
 function formatDate(dateString) {
   const date = new Date(dateString);
@@ -41,17 +44,21 @@ function Offer() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const { referral } = useSelector((state) => state.referrals);
+  const allUsers = useSelector((state) => state.user.allUsers);
   const {request, requests} = useSelector((state)=> state.requests)
   const isSender = referral?.senderId === userInfo.id;
   const isReceiver = referral?.receiverId === userInfo.id;
   const isOpen = referral?.receiverId === null;
    const isRequested = request?.referralId === id
   const [timeRemaining, setTimeRemaining] = useState("");
-  const isRequester = request?.requesterId === userInfo.id
- 
   const filteredRequest =  requests.find((req) => req.requesterId === userInfo.id)
+  
+  const isRequester = filteredRequest?.requesterId === userInfo.id
+
+ 
   useEffect(() => {
    dispatch(getAllRequests())
+   dispatch(getAllUsers())
   
   }, []);
   useEffect(() => {
@@ -60,15 +67,15 @@ function Offer() {
   
   }, [dispatch, id]);
 
-  // Re-fetch request when its status changes
+  
+
   useEffect(() => {
     if (request?.status) {
-      dispatch(getRequest(id)); // Fetch updated request after status change
+      dispatch(getRequest(id)); 
       dispatch(getReferral(id));
-   
-     
     }
-  }, [dispatch, id, request?.status]);
+  }, [request?.status]); // Peut-être se concentrer uniquement sur le statut réel de changement
+ 
   useEffect(() => {
     if (referral?.createdAt) {
       const createdAtDate = new Date(referral.createdAt);
@@ -112,8 +119,7 @@ function Offer() {
 
  };
  
-  
-
+ 
 
 
  
@@ -174,16 +180,11 @@ function Offer() {
     <Stack display="flex" flexDirection="row" gap={1} mt={1}>
       
         
-                <Button
-                    variant="contained"
-                    onClick={() => {
-                      
-                       
-                    }}
-                    
-                >
-                 Envoyer à un agent
-                </Button>
+               
+                <UserAttributed users = {allUsers} referral={referral}/>
+             
+
+             
               
         
         
@@ -256,7 +257,7 @@ function Offer() {
 
           {renderCardHeader()}
 
-          {isOpen && !isSender && !isRequester && !filteredRequest &&(
+          {isOpen && !isSender && !isRequester &&(
             <Button variant="contained" onClick={handleRequest}>
               Demander ce referral
             </Button>
@@ -266,7 +267,7 @@ function Offer() {
             DEMANDE EN ATTENTE 
             </Button>
           )}
-           {filteredRequest?.status === "rejected"&& isRequester && isRequested &&(
+           {filteredRequest?.status === "rejected"&& isRequester && isRequested && !isSender &&(
             <Button variant="outlined" color="error" disabled>
             <Typography color="error">demande non attribué </Typography>
             </Button>
@@ -324,7 +325,7 @@ function Offer() {
   </>)}
 
 
-{request?.status == "rejected" && isRequester ?(
+{filteredRequest?.status == "rejected" && isRequester ?(
  ""
 
 ) :  <Box m={5}>  <StepperComponent referral = {referral}></StepperComponent> </Box>}
