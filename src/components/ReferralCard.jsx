@@ -65,8 +65,8 @@ function ReferralCard({referral}) {
 
 
           <Box sx={{ padding: '16px', display: 'flex', justifyContent: 'right' }}>
-  {referral?.status !== "envoyé" && referral?.status !== "rejeté" ? (
-    <Button variant="contained" disabled size="small">{referral?.status}</Button>
+  {referral?.globalStatus !== "envoyé" && referral?.globalStatus !== "rejeté" ? (
+    <Button variant="contained" disabled size="small">{referral?.globalStatus}</Button>
   ) : (
     <Link to={`/offre/${referral.id}`}>
       <Button variant="contained" size="small">Voir</Button>

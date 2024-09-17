@@ -17,11 +17,11 @@ const steps = [
 function StepperComponent({ referral }) {
   // Function to check if the step is "attribué" and rejected
   const isStepFailed = (step) => {
-    return step === 2 && referral?.status === "rejeté";  // Mark the 3rd step (attribué) as failed only if rejected
+    return step === 2 && referral?.globalStatus === "rejeté";  // Mark the 3rd step (attribué) as failed only if rejected
   };
 
-  // Find the index of the current referral status in the steps array
-  const activeStepIndex =referral?.status !== "rejeté"? steps.indexOf(referral?.status) : 2;
+  // Find the index of the current referral globalStatus in the steps array
+  const activeStepIndex =referral?.globalStatus !== "rejeté"? steps.indexOf(referral?.globalStatus) : 2;
 
   return (
     <Box sx={{ width: '100%' }}>

@@ -15,18 +15,19 @@ function UserAttributed({ users, referral }) {
       console.log(value);
 
       // Créer une copie de l'objet referral pour ne pas le muter directement
-      const updatedReferral = { ...referral, receiverId: value.id };
+      const updatedReferral = { ...referral, receiverId: value.id , status : "en attente"};
 
       // Mettre à jour le referral avec le dispatch
       dispatch(updateReferral(id, updatedReferral));
     }
   };
-
+  const userInfo =  JSON.parse(localStorage.getItem('userInfo'))
+const otherUser =  users.filter((u)=> u.id !== userInfo.id )
   return (
     <Autocomplete
       id="users"
       sx={{ width: 300 }}
-      options={users}
+      options={otherUser}
       autoHighlight
       getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
       onChange={handleSelectedValue}
