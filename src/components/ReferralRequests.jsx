@@ -79,7 +79,7 @@ const filterRequests =  requests?.filter((req) => req?.referralId === id)
              
               <Grid size={6}sx={{display:"flex", alignItems:"center" , justifyContent:"flex-end"}} >
               <Stack display="flex" flexDirection="row" gap={5} >
-        {req?.referral.globalStatus === "attribué" && req?.status === "accepted" ? (
+        {req?.referral.status === "attribué" && req?.status === "accepted" ? (
           
                <Chip variant="contained" label= "Attribué "
                sx={{ bgcolor: "green", color: "white" ,width : "75px"}} 
@@ -92,7 +92,7 @@ const filterRequests =  requests?.filter((req) => req?.referralId === id)
             <>
                <Button
   variant="contained"
-  disabled={req?.referral.globalStatus === "attribué" } // Correctly using 'disabled' prop
+  disabled={req?.referral.status === "attribué" } // Correctly using 'disabled' prop
   onClick={async () => {
     await dispatch(updateRequestStatus(req?.id, "accepted"));
      // Rejet des autres requêtes
@@ -110,7 +110,7 @@ const filterRequests =  requests?.filter((req) => req?.referralId === id)
 
                 <Button
                     variant="outlined"
-                    disabled={req?.referral.globalStatus === "attribué" } // Correctly using 'disabled' prop
+                    disabled={req?.referral.status === "attribué" } // Correctly using 'disabled' prop
 
                     color="error"
                     onClick={ async () => {

@@ -5,6 +5,9 @@ const referralSlice = createSlice({
   initialState: {
     referrals: null,
     referral: null,
+    loading: false,
+    error: null,
+    message: '',
   },
   reducers: {
     getAllReferrals(state, action) {
@@ -35,6 +38,19 @@ const referralSlice = createSlice({
       state.referrals = state.referrals.filter(
         (ref) => ref.id !== action.payload.id
       );
+    },
+    attributeReferralRequest(state) {
+      state.loading = true;
+      state.error = null;
+      state.message = '';
+    },
+    attributeReferralSuccess(state, action) {
+      state.loading = false;
+      state.message = action.payload;
+    },
+    attributeReferralFailure(state, action) {
+      state.loading = false;
+      state.error = action.payload;
     },
   },
 });

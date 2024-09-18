@@ -21,28 +21,28 @@ function ReferralCard({referral}) {
 >
 <Typography gutterBottom variant="h5" component="div" fontWeight="600">
         
-   Referral { `${referral.typeDeReferral}`.charAt(0).toUpperCase() +referral.typeDeReferral.slice(1)}
+   Referral { `${referral?.typeDeReferral}`.charAt(0).toUpperCase() +referral?.typeDeReferral.slice(1)}
     </Typography>
     <Typography gutterBottom variant="body2" component="div" color="text.secondary">
         
-    Contact : { `${referral.natureDuContact}`}
+    Contact : { `${referral?.natureDuContact}`}
     </Typography>
     
    
     <Typography gutterBottom variant="body2" component="div" color="text.secondary">
         
-   Lieu :  { `${referral.lieu}`.charAt(0).toUpperCase() +referral.lieu.slice(1)}
+   Lieu :  { `${referral?.lieu}`.charAt(0).toUpperCase() +referral.lieu.slice(1)}
     </Typography>
     <Typography gutterBottom variant="body2" component="div"  color="text.secondary">
         
-        Prix : { `${referral.price}`} €
+        Prix : { `${referral?.price}`} €
         </Typography>
 
     </CardContent>
     <Divider></Divider>
     <CardContent sx={{ flexGrow: 1 }}>
             <Typography variant="body2" color="text.secondary">
-          A la recherche d'un agent aux alentoures de   { `${referral.lieu}`.charAt(0).toUpperCase() +referral.lieu.slice(1)}
+          A la recherche d'un agent aux alentoures de   { `${referral?.lieu}`.charAt(0).toUpperCase() +referral?.lieu.slice(1)}
             </Typography>
           
             <Typography variant="body2" color="text.secondary">
@@ -51,7 +51,7 @@ function ReferralCard({referral}) {
           <Divider></Divider>
           <CardHeader
         avatar={
-          <Avatar  aria-label="recipe" src ={referral.sender.Profile.imageUrl}>
+          <Avatar  aria-label="recipe" src ={referral?.sender.Profile.imageUrl}>
         
           </Avatar>
         }
@@ -65,8 +65,8 @@ function ReferralCard({referral}) {
 
 
           <Box sx={{ padding: '16px', display: 'flex', justifyContent: 'right' }}>
-  {referral?.globalStatus !== "envoyé" && referral?.globalStatus !== "rejeté" ? (
-    <Button variant="contained" disabled size="small">{referral?.globalStatus}</Button>
+  {referral?.status !== "envoyé"  ? (
+    <Button variant="contained" disabled size="small">{referral?.status}</Button>
   ) : (
     <Link to={`/offre/${referral.id}`}>
       <Button variant="contained" size="small">Voir</Button>

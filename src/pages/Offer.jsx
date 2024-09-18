@@ -23,8 +23,6 @@ import StepperComponent from "../components/Stepper";
 import ReferralRequests from "../components/ReferralRequests";
 import { getAllUsers } from "../redux/apiCalls/userApiCall";
 import UserAttributed from "../components/UserAttributed";
-import { getReferralUserStatus, updateReferralUserStatus } from '../slices/referralUsersStatusSlice';
-
 
 
 function formatDate(dateString) {
@@ -57,13 +55,7 @@ function Offer() {
   
   const isRequester = filteredRequest?.requesterId === userInfo.id
 
-  const { referralUserStatus, status, error } = useSelector((state) => state.referralUserStatus);
-  useEffect(() => {
-    if (status === 'idle') {
-      dispatch(getReferralUserStatus(referralId, userId));
-    }
-  }, [dispatch, referralId, userId, status]);
-  
+ 
   useEffect(() => {
    dispatch(getAllRequests())
    dispatch(getAllUsers())
@@ -78,11 +70,11 @@ function Offer() {
   
 
   useEffect(() => {
-    if (request?.globalStatus) {
+    if (request?.status) {
       dispatch(getRequest(id)); 
       dispatch(getReferral(id));
     }
-  }, [request?.globalStatus]);
+  }, [request?.status]); // Peut-être se concentrer uniquement sur le statut réel de changement
  
   useEffect(() => {
     if (referral?.createdAt) {
@@ -136,9 +128,15 @@ function Offer() {
     <Stack spacing={isSender ? 1 : 2} direction={isSender ? "row" : "column"}>
     
 
-      {referral?.globalStatus === "en attente" && (
+      {referral?.status === "en attente" && (
         isSender ? (
-          <Box variant="subtitle1">Temps restant:{timeRemaining}</Box>
+          <Stack variant="subtitle1" flexDirection="row" alignItems="center" justifyContent="center" gap={1}>
+              <Typography> Temps restant:  </Typography>
+           
+             <Chip variant="contained" label={timeRemaining} 
+              sx={{ bgcolor: "red", color: "white" }} 
+            />  
+          </Stack>  
         ) : (
           <>
             <Button variant="contained" onClick={handleAccept} disabled={timeRemaining === "Expirée"}>
@@ -147,12 +145,13 @@ function Offer() {
             <Button variant="outlined" color="error" onClick={handleReject} disabled={timeRemaining === "Expirée"}>
               Rejeter
             </Button>
-            <Box variant="subtitle1">
-            Temps restant: 
+            <Stack variant="subtitle1" flexDirection="row" alignItems="center" justifyContent="center" gap={1}>
+              <Typography> Temps restant:  </Typography>
+           
              <Chip variant="contained" label={timeRemaining} 
               sx={{ bgcolor: "red", color: "white" }} 
             />  
-          </Box>                  
+          </Stack>                  
             
           </>
         )
@@ -166,10 +165,10 @@ function Offer() {
     let subheader = "Non attribué";
 
     if (isSender) {
-      avatarSrc = referral?.receiver?.Profile?.imageUrl || ""  ;
-      // subheader = !isOpen && !isRequested ? ` ${referral?.receiver?.firstName} ${referral?.receiver?.lastName} / ${referral?.receiver?.organisation?.toUpperCase()}` :  ` ${request?.requester?.firstName} ${request?.requester?.lastName} / ${request?.requester?.organisation?.toUpperCase()}` ;
+      avatarSrc = referral?.receiver?.Profile?.imageUrl || "" ||request?.requester?.Profile.imageUrl ;
+      subheader = !isOpen && !isRequested ? ` ${referral?.receiver?.firstName} ${referral?.receiver?.lastName} / ${referral?.receiver?.organisation?.toUpperCase()}` :  ` ${request?.requester?.firstName} ${request?.requester?.lastName} / ${request?.requester?.organisation?.toUpperCase()}` ;
 
-       subheader = isOpen && !isRequested ? subheader :  ` ${request?.requester?.firstName} ${request?.requester?.lastName} / ${request?.requester?.organisation?.toUpperCase()}` ;
+      // subheader = isOpen && !isRequested ? subheader :  ` ${request?.requester?.firstName} ${request?.requester?.lastName} / ${request?.requester?.organisation?.toUpperCase()}` ;
     } else if (isReceiver || isOpen) {
       avatarSrc = referral?.sender?.Profile?.imageUrl || "";
       subheader = `${referral?.sender?.firstName} ${referral?.sender?.lastName} / ${referral?.sender?.organisation?.toUpperCase()}`;
@@ -183,7 +182,7 @@ function Offer() {
         subheader={subheader}
       />
   
-{isOpen && isSender && request?.globalStatus !== "accepted" && (
+{isOpen && isSender && request?.status !== "accepted" && (
   
     <Stack display="flex" flexDirection="row" gap={1} mt={1}>
       
@@ -208,7 +207,7 @@ function Offer() {
   };
 
   const renderClientInfo = () => {
-    const canViewClientInfo = referral?.globalStatus === "mandat" || isSender;
+    const canViewClientInfo = referral?.status === "mandat" || isSender;
     return (
       <CardContent sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
         <Typography variant="h5">Info Client</Typography>
@@ -270,12 +269,12 @@ function Offer() {
               Demander ce referral
             </Button>
           )}
-            {isOpen && !isSender &&  filteredRequest?.globalStatus == "pending" &&(
+            {isOpen && !isSender &&  filteredRequest?.status == "pending" &&(
             <Button variant="contained" disabled>
             DEMANDE EN ATTENTE 
             </Button>
           )}
-           {filteredRequest?.globalStatus === "rejected"&& isRequester && isRequested && !isSender &&(
+           {filteredRequest?.status === "rejected"&& isRequester && isRequested && !isSender &&(
             <Button variant="outlined" color="error" disabled>
             <Typography color="error">demande non attribué </Typography>
             </Button>
@@ -333,7 +332,7 @@ function Offer() {
   </>)}
 
 
-{filteredRequest?.globalStatus == "rejected" && isRequester ?(
+{filteredRequest?.status == "rejected" && isRequester ?(
  ""
 
 ) :  <Box m={5}>  <StepperComponent referral = {referral}></StepperComponent> </Box>}

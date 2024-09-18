@@ -44,8 +44,28 @@ export function createReferral(referral) {
           Authorization: "Bearer " + getState().auth.user.token,
         },
       });
-      dispatch(referralActions.create(data));
+      dispatch(referralActions.createReferral(data)); // Note: utiliser `createReferral`
     } catch (error) {
+      toast.error(error.response.data.message);
+    }
+  };
+}
+
+// POST - Attribute a Referral
+export function attributeReferral(id, receiverId) {
+  return async (dispatch, getState) => {
+    dispatch(referralActions.attributeReferralRequest());
+
+    try {
+      const { data } = await request.post(`/api/referrals/${id}/attribute`, { receiverId }, {
+        headers: {
+          Authorization: "Bearer " + getState().auth.user.token,
+        },
+      });
+      dispatch(referralActions.attributeReferralSuccess(data.message));
+      toast.success(data.message);
+    } catch (error) {
+      dispatch(referralActions.attributeReferralFailure(error.response.data.message));
       toast.error(error.response.data.message);
     }
   };

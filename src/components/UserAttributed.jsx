@@ -3,31 +3,31 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { useParams } from "react-router-dom";
-import { updateReferral } from "../redux/apiCalls/referralApiCall";
+import { createAttribute } from "../redux/apiCalls/referralApiCall";
 
 function UserAttributed({ users, referral }) {
   const { id } = useParams();  // Récupérer l'ID du referral
   const dispatch = useDispatch();
-
+const userInfo = JSON.parse(localStorage.getItem('userInfo'))
   // Fonction appelée lorsque l'utilisateur sélectionne une valeur
   const handleSelectedValue = (event, value) => {
     if (value) {  // Si une valeur est sélectionnée
-      console.log(value);
 
       // Créer une copie de l'objet referral pour ne pas le muter directement
-      const updatedReferral = { ...referral, receiverId: value.id , status : "en attente"};
+      // const updatedReferral = { ...referral, receiverId: value.id, status :"en attente" };
 
       // Mettre à jour le referral avec le dispatch
-      dispatch(updateReferral(id, updatedReferral));
+      dispatch(createAttribute(id, value.id));
     }
   };
-  const userInfo =  JSON.parse(localStorage.getItem('userInfo'))
-const otherUser =  users.filter((u)=> u.id !== userInfo.id )
+
+  const otherUsers = users.filter((u) => u.id !== userInfo.id)
+
   return (
     <Autocomplete
       id="users"
       sx={{ width: 300 }}
-      options={otherUser}
+      options={otherUsers}
       autoHighlight
       getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
       onChange={handleSelectedValue}

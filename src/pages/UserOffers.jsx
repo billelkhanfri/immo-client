@@ -16,6 +16,7 @@ import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import Badge from '@mui/material/Badge';
 import { useDispatch, useSelector } from "react-redux";
 import { getAllReferrals } from "../redux/apiCalls/referralApiCall";
+import OpenReferrals from "../components/OpenReferrals";
 function UserOffers() {
   const [value, setValue] = useState(0);
   const dispatch = useDispatch(); // Redux dispatch function
@@ -35,11 +36,11 @@ function UserOffers() {
 
 
   const sentReferrals =
-    referrals?.filter((referral) => referral.senderId === userInfo?.id) ;
+    referrals?.filter((referral) => referral.senderId === userInfo?.id && referral.status !== "envoyé") ;
 
  const receivedReferral = referrals?.filter((r)=> r.receiverId === userInfo?.id)
+ const openReferrals = referrals?.filter((r)=> r.status === "envoyé" && r.senderId === userInfo?.id)
 
- console.log(filteredRequest)
   return (
     <Container sx={{ backgroundColor: "#FFFFFF", borderRadius: 2, padding: 2 }}>
       <Typography
@@ -60,6 +61,24 @@ function UserOffers() {
             setValue(newValue);
           }}
         >
+
+<BottomNavigationAction
+      label={
+        <Box>
+          <Badge
+           badgeContent={openReferrals?.length }
+           color="error"
+            sx={{
+              '.MuiBadge-badge': {
+                top: -5,
+              },
+            }}
+          >
+            Mes offres ouvertes
+          </Badge>
+        </Box>
+      }
+    />
     <BottomNavigationAction
       label={
         <Box>
@@ -93,9 +112,11 @@ function UserOffers() {
     </Badge> } />
         </BottomNavigation>
         <Box mt={2}>
-          {value === 0 && <SentByUser sentReferrals = {sentReferrals}/>}
-          {value === 1 && <RecievedByUser receivedReferral = {receivedReferral}/>}
-          {value === 2 && <SentByUser sentReferrals = {filteredRequest} requestData = {requestData}/>}
+        {value === 0 && <OpenReferrals openReferrals = {openReferrals}/>}
+
+          {value === 1 && <SentByUser sentReferrals = {sentReferrals}/>}
+          {value === 2 && <RecievedByUser receivedReferral = {receivedReferral}/>}
+          {value === 3 && <SentByUser sentReferrals = {filteredRequest} requestData = {requestData}/>}
         </Box>
       </Box>
     </Container>
