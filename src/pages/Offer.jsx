@@ -23,6 +23,7 @@ import StepperComponent from "../components/Stepper";
 import ReferralRequests from "../components/ReferralRequests";
 import { getAllUsers } from "../redux/apiCalls/userApiCall";
 import UserAttributed from "../components/UserAttributed";
+import {getAllReferralAttributes} from "../redux/apiCalls/attributeApiCall"
 
 
 function formatDate(dateString) {
@@ -44,23 +45,43 @@ function Offer() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const { referral } = useSelector((state) => state.referrals);
+  const { attributes } = useSelector((state) => state.attributes);
+  const attribute = attributes.filter((att)=> att.senderId === userInfo.id)
+
   const allUsers = useSelector((state) => state.user.allUsers);
   const {request, requests} = useSelector((state)=> state.requests)
   const isSender = referral?.senderId === userInfo.id;
   const isReceiver = referral?.receiverId === userInfo.id;
   const isOpen = referral?.receiverId === null;
    const isRequested = request?.referralId === id
+
+   const isWaitingAttribution = attribute?.some((att) => 
+    att.senderId === userInfo.id &&
+    att.referralId === id &&
+    att.status === "pending"
+  );
+  
+const attributedReferral = attribute?.find((att)=> {
+  att.receivedId === userInfo.id &&
+    att.referralId === id 
+ 
+
+})
+  
   const [timeRemaining, setTimeRemaining] = useState("");
   const filteredRequest =  requests.find((req) => req.requesterId === userInfo.id)
+
   
   const isRequester = filteredRequest?.requesterId === userInfo.id
-
- 
+console.log(attribute)
   useEffect(() => {
    dispatch(getAllRequests())
    dispatch(getAllUsers())
+   dispatch(getAllReferralAttributes())
   
   }, []);
+
+
   useEffect(() => {
     dispatch(getReferral(id));
     dispatch(getRequest(id))
@@ -128,7 +149,7 @@ function Offer() {
     <Stack spacing={isSender ? 1 : 2} direction={isSender ? "row" : "column"}>
     
 
-      {referral?.status === "en attente" && (
+      {referral?.status === "envoyé" && isWaitingAttribution && (
         isSender ? (
           <Stack variant="subtitle1" flexDirection="row" alignItems="center" justifyContent="center" gap={1}>
               <Typography> Temps restant:  </Typography>
@@ -162,18 +183,27 @@ function Offer() {
   const renderCardHeader = () => {
     let title = "Agent partner";
     let avatarSrc = "";
-    let subheader = "Non attribué";
-
+    let subheader = "Non attribué"; // Valeur par défaut
+  
     if (isSender) {
-      avatarSrc = referral?.receiver?.Profile?.imageUrl || "" ||request?.requester?.Profile.imageUrl ;
-      subheader = !isOpen && !isRequested ? ` ${referral?.receiver?.firstName} ${referral?.receiver?.lastName} / ${referral?.receiver?.organisation?.toUpperCase()}` :  ` ${request?.requester?.firstName} ${request?.requester?.lastName} / ${request?.requester?.organisation?.toUpperCase()}` ;
-
-      // subheader = isOpen && !isRequested ? subheader :  ` ${request?.requester?.firstName} ${request?.requester?.lastName} / ${request?.requester?.organisation?.toUpperCase()}` ;
-    } else if (isReceiver || isOpen) {
+      // Si l'utilisateur est l'expéditeur
+      avatarSrc = referral?.receiver?.Profile?.imageUrl || request?.requester?.Profile?.imageUrl || ""; 
+  
+      if (!isOpen && !isRequested) {
+        subheader = `${referral?.receiver?.firstName || ''} ${referral?.receiver?.lastName || ''} / ${referral?.receiver?.organisation?.toUpperCase() || ''}`;
+      } else if (isOpen && isRequested) {
+        subheader = `${request?.requester?.firstName || ''} ${request?.requester?.lastName || ''} / ${request?.requester?.organisation?.toUpperCase() || ''}`;
+       }// else if (isOpen && !isRequested) {
+      //   subheader = "En attente d'une attribution"; // Cas où la demande est ouverte mais pas encore attribuée
+      // }
+    } else if (isReceiver) {
+      // Si l'utilisateur est le destinataire
       avatarSrc = referral?.sender?.Profile?.imageUrl || "";
-      subheader = `${referral?.sender?.firstName} ${referral?.sender?.lastName} / ${referral?.sender?.organisation?.toUpperCase()}`;
+      subheader = `${referral?.sender?.firstName || ''} ${referral?.sender?.lastName || ''} / ${referral?.sender?.organisation?.toUpperCase() || ''}`;
+    } else {
+      // Cas où l'utilisateur n'est ni expéditeur ni destinataire
+      subheader = "Non attribué";
     }
-
     return (
       <> 
       <CardHeader
@@ -182,7 +212,7 @@ function Offer() {
         subheader={subheader}
       />
   
-{isOpen && isSender && request?.status !== "accepted" && (
+{isOpen && isSender && request?.status !== "accepted" &&  !isWaitingAttribution &&(
   
     <Stack display="flex" flexDirection="row" gap={1} mt={1}>
       
@@ -201,6 +231,9 @@ function Offer() {
 
 
 }
+{isWaitingAttribution && (
+  <Typography> en attente pour accepter l'attribution</Typography>
+)}
 
     </>
     );

@@ -51,13 +51,12 @@ export function createReferral(referral) {
   };
 }
 
-// POST - Attribute a Referral
-export function attributeReferral(id, receiverId) {
+export function attributeReferral(id, receivedId) { // Utilisez receivedId
   return async (dispatch, getState) => {
     dispatch(referralActions.attributeReferralRequest());
 
     try {
-      const { data } = await request.post(`/api/referrals/${id}/attribute`, { receiverId }, {
+      const { data } = await request.post(`/api/referrals/${id}/attribute`, { receivedId }, {
         headers: {
           Authorization: "Bearer " + getState().auth.user.token,
         },
@@ -70,6 +69,7 @@ export function attributeReferral(id, receiverId) {
     }
   };
 }
+
 
 // PUT - Update an existing Referral
 export function updateReferral(id, referral) {
