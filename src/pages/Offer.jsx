@@ -61,12 +61,8 @@ function Offer() {
     att.status === "pending"
   );
   
-const attributedReferral = attribute?.find((att)=> {
-  att.receivedId === userInfo.id &&
-    att.referralId === id 
- 
-
-})
+const attributedReferral = attributes?.find((att)=> (att.receivedId === userInfo.id && att.referralId === id ))
+console.log(attributedReferral)
   
   const [timeRemaining, setTimeRemaining] = useState("");
   const filteredRequest =  requests.find((req) => req.requesterId === userInfo.id)
@@ -95,7 +91,7 @@ console.log(attribute)
       dispatch(getRequest(id)); 
       dispatch(getReferral(id));
     }
-  }, [request?.status]); // Peut-être se concentrer uniquement sur le statut réel de changement
+  }, [request?.status]); 
  
   useEffect(() => {
     if (referral?.createdAt) {
@@ -368,7 +364,7 @@ console.log(attribute)
 {filteredRequest?.status == "rejected" && isRequester ?(
  ""
 
-) :  <Box m={5}>  <StepperComponent referral = {referral}></StepperComponent> </Box>}
+) :  <Box m={5}>  <StepperComponent referral = {referral} attributedReferral = {attributedReferral}></StepperComponent> </Box>}
     
     </Container>
   );

@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
-import Typography from '@mui/material/Typography';
+
 
 const steps = [
   "envoyé",
@@ -14,14 +14,16 @@ const steps = [
   "acte",
 ];
 
-function StepperComponent({ referral }) {
+function StepperComponent({ referral, attributedReferral}) {
   // Function to check if the step is "attribué" and rejected
   const isStepFailed = (step) => {
     return step === 2 && referral?.status === "rejeté";  // Mark the 3rd step (attribué) as failed only if rejected
   };
-
-  // Find the index of the current referral status in the steps array
-  const activeStepIndex =referral?.status !== "rejeté"? steps.indexOf(referral?.status) : 2;
+console.log(attributedReferral)
+  // // Find the index of the current referral status in the steps array
+  // const activeStepIndex =referral?.status !== "rejeté"? steps.indexOf(referral?.status) : 2;
+  //   // Find the index of the current referral status in the steps array
+    const activeStepIndex = attributedReferral?.status === "pending"?  1: steps.indexOf(referral?.status);
 
   return (
     <Box sx={{ width: '100%' }}>

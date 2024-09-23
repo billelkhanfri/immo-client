@@ -10,6 +10,7 @@ import  { useEffect, useState } from "react";
 import {  getAllRequests } from "../redux/apiCalls/requestApiCall";
 
 import SentByUser from "../components/SentByUser";
+import {getAllReferralAttributes} from "../redux/apiCalls/attributeApiCall"
 
 import RecievedByUser from "../components/RecievedByUser";
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
@@ -25,11 +26,19 @@ function UserOffers() {
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
   const {requests} = useSelector((state)=> state.requests)
+  const { attributes } = useSelector((state) => state.attributes);
+  console.log(userInfo.id)
+  console.log(attributes)
+  const attributedReferral = attributes?.filter((att)=> att.receivedId == userInfo.id 
+  )
+console.log(attributes)
+  console.log(attributedReferral)
 
   // Fetch referral data on component mount
   useEffect(() => {
     dispatch(getAllReferrals());
     dispatch(getAllRequests())
+    dispatch(getAllReferralAttributes())
   }, [dispatch]);
   const filteredRequest =  requests.filter((req) => req.requesterId === userInfo.id).map((ref)=> ref.referral)
   const requestData=  requests.filter((req) => req.requesterId === userInfo.id)
@@ -38,8 +47,9 @@ function UserOffers() {
   const sentReferrals =
     referrals?.filter((referral) => referral.senderId === userInfo?.id && referral.status !== "envoyé") ;
 
- const receivedReferral = referrals?.filter((r)=> r.receiverId === userInfo?.id)
+ const receivedReferral = referrals?.filter((r)=> r.receiverId === userInfo?.id && r.status !== "envoyé")
  const openReferrals = referrals?.filter((r)=> r.status === "envoyé" && r.senderId === userInfo?.id)
+const referralAttributedBody =  referrals?.filter((r)=> r.receiverId === userInfo?.id && r.status === "envoyé")
 
   return (
     <Container sx={{ backgroundColor: "#FFFFFF", borderRadius: 2, padding: 2 }}>
@@ -96,7 +106,7 @@ function UserOffers() {
         </Box>
       }
     />
-          <BottomNavigationAction label=  {   <Badge badgeContent= {receivedReferral?.length} color="error"  sx={{
+          <BottomNavigationAction label=  {   <Badge badgeContent= { receivedReferral?.length + attributedReferral?.length} color="error"  sx={{
               '.MuiBadge-badge': {
                 top: -5,
               },
@@ -115,7 +125,7 @@ function UserOffers() {
         {value === 0 && <OpenReferrals openReferrals = {openReferrals}/>}
 
           {value === 1 && <SentByUser sentReferrals = {sentReferrals}/>}
-          {value === 2 && <RecievedByUser receivedReferral = {receivedReferral}/>}
+          {value === 2 && <RecievedByUser receivedReferral = {receivedReferral} attributedReferral = {referralAttributedBody}/>}
           {value === 3 && <SentByUser sentReferrals = {filteredRequest} requestData = {requestData}/>}
         </Box>
       </Box>
