@@ -12,10 +12,10 @@ import { Link } from "react-router-dom";
 const UserOffersCard = ({ offer, requests }) => {
   const [loading, setLoading] = useState(true);
   const userInfo = JSON.parse(localStorage.getItem('userInfo'))
- const isSender = offer?.sender.id === userInfo.id
+ const isSender = offer?.senderId=== userInfo.id
 
  const request = requests?.find((e) => e.referralId === offer?.id) 
- console.log(request)
+ console.log(offer)
 
  const statusTranslation = {
   pending: "En attente",
@@ -118,7 +118,7 @@ const UserOffersCard = ({ offer, requests }) => {
   return (
     <Card
       component={Link}
-      to={`/offre/${offer?.id}`}
+      to={`/offre/${offer?.referralId}`}
       variant="outlined"
       sx={{
         display: "flex",
@@ -171,7 +171,7 @@ const UserOffersCard = ({ offer, requests }) => {
             {offer?.sender.organisation}
           </Typography>
           <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-          {formatDate(offer?.createdAt)}
+          {formatDate(offer?.updatedAt)}
           </Typography>
           <Typography
   sx={{ fontSize: 14 }}
@@ -213,7 +213,7 @@ const UserOffersCard = ({ offer, requests }) => {
               textDecoration: "none", // Ensure no underline by default
             }}
           >
-            {offer?.commentaire}
+            {offer?.referral?.commentaire}
           </Typography>
           <Button
             variant="outlined"
@@ -239,10 +239,10 @@ const UserOffersCard = ({ offer, requests }) => {
             gap: 2,
           }}
         ><Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-        {offer?.typeDeReferral}
+        {offer?.referral?.typeDeReferral}
       </Typography>
       <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-        {offer?.lieu}
+        {offer?.referral?.lieu}
       </Typography>
     
     </Box> )}

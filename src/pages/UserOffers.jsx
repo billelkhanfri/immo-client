@@ -27,12 +27,8 @@ function UserOffers() {
 
   const {requests} = useSelector((state)=> state.requests)
   const { attributes } = useSelector((state) => state.attributes);
-  console.log(userInfo.id)
-  console.log(attributes)
-  const attributedReferral = attributes?.filter((att)=> att.receivedId == userInfo.id 
-  )
-console.log(attributes)
-  console.log(attributedReferral)
+  const attributedReferral = attributes?.filter((att)=> att.receivedId == userInfo.id )
+
 
   // Fetch referral data on component mount
   useEffect(() => {
@@ -40,16 +36,16 @@ console.log(attributes)
     dispatch(getAllRequests())
     dispatch(getAllReferralAttributes())
   }, [dispatch]);
+
+
+
   const filteredRequest =  requests.filter((req) => req.requesterId === userInfo.id).map((ref)=> ref.referral)
   const requestData=  requests.filter((req) => req.requesterId === userInfo.id)
 
 
-  const sentReferrals =
-    referrals?.filter((referral) => referral.senderId === userInfo?.id && referral.status !== "envoyé") ;
-
- const receivedReferral = referrals?.filter((r)=> r.receiverId === userInfo?.id && r.status !== "envoyé")
- const openReferrals = referrals?.filter((r)=> r.status === "envoyé" && r.senderId === userInfo?.id)
-const referralAttributedBody =  referrals?.filter((r)=> r.receiverId === userInfo?.id && r.status === "envoyé")
+ const receivedReferral = attributedReferral
+ const openReferrals = referrals?.filter((r)=> !r.isPending && r.senderId === userInfo?.id)
+ const pendingReferral = referrals?.filter((r)=> r.isPending && r.senderId === userInfo?.id)
 
   return (
     <Container sx={{ backgroundColor: "#FFFFFF", borderRadius: 2, padding: 2 }}>
@@ -93,7 +89,7 @@ const referralAttributedBody =  referrals?.filter((r)=> r.receiverId === userInf
       label={
         <Box>
           <Badge
-           badgeContent={sentReferrals?.length }
+           badgeContent={pendingReferral?.length }
            color="error"
             sx={{
               '.MuiBadge-badge': {
@@ -101,12 +97,12 @@ const referralAttributedBody =  referrals?.filter((r)=> r.receiverId === userInf
               },
             }}
           >
-            Mes offres envoyées
+            Mes offres en attente
           </Badge>
         </Box>
       }
     />
-          <BottomNavigationAction label=  {   <Badge badgeContent= { receivedReferral?.length + attributedReferral?.length} color="error"  sx={{
+          <BottomNavigationAction label=  {   <Badge badgeContent= { receivedReferral?.length} color="error"  sx={{
               '.MuiBadge-badge': {
                 top: -5,
               },
@@ -124,8 +120,8 @@ const referralAttributedBody =  referrals?.filter((r)=> r.receiverId === userInf
         <Box mt={2}>
         {value === 0 && <OpenReferrals openReferrals = {openReferrals}/>}
 
-          {value === 1 && <SentByUser sentReferrals = {sentReferrals}/>}
-          {value === 2 && <RecievedByUser receivedReferral = {receivedReferral} attributedReferral = {referralAttributedBody}/>}
+          {value === 1 && <SentByUser pendingReferrals= {pendingReferral}/>}
+          {value === 2 && <RecievedByUser receivedReferral = {receivedReferral}/>}
           {value === 3 && <SentByUser sentReferrals = {filteredRequest} requestData = {requestData}/>}
         </Box>
       </Box>

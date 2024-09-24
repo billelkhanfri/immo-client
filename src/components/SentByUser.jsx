@@ -3,12 +3,11 @@ import {  useState } from "react";
 import UserOffersCard from "./UserOffersCard";
 import { Box, Button, Typography } from "@mui/material";
 
-function SentByUser({sentReferrals , requestData}) {
+function SentByUser({pendingReferrals , requestData}) {
  
   const [showAll, setShowAll] = useState(false);
 
  
-console.log(requestData)
 
   return (
     <Typography
@@ -28,7 +27,7 @@ console.log(requestData)
           alignItems: "center", // Center align the skeletons
         }}
       ></Box>
-      {sentReferrals?.length === 0 ? (
+      {pendingReferrals?.length === 0 ? (
         // No referrals message
         <Typography
           variant="h6"
@@ -43,11 +42,11 @@ console.log(requestData)
         </Typography>
       ) : (
         <>
-          {sentReferrals?.map((referral) => (
+          {pendingReferrals?.map((referral) => (
             <UserOffersCard key={referral.id} offer={referral} requests = {requestData} />
           ))}
       
-          {sentReferrals?.length > 3 && (
+          {pendingReferrals?.length > 3 && (
             <Box
               textAlign="center"
               mt={2}
