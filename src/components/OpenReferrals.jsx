@@ -1,5 +1,5 @@
 import  { useState } from "react";
-import UserOffersCard from "./UserOffersCard";
+import OpenOffersCard from "./OpenOffersCard";
 import { Box, Button, Typography } from "@mui/material";
 
 function OpenReferrals({openReferrals}) {
@@ -38,7 +38,7 @@ function OpenReferrals({openReferrals}) {
     ) : (
       <>
         {openReferrals?.map((referral) => (
-          <UserOffersCard key={referral.id} offer={referral} />
+          <OpenOffersCard key={referral.id} open = {referral} />
         ))}
         {openReferrals?.length > 3 && (
           <Box

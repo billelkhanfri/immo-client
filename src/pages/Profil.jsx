@@ -32,7 +32,7 @@ import {
  
 } from "../redux/apiCalls/profileApiCall";
 import { getAllReferrals } from "../redux/apiCalls/referralApiCall";
-import SentByUser from "../components/SentByUser";
+// import SentByUser from "../components/SentByUser";
 import { ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -487,7 +487,7 @@ const onSubmit = async () => {
               {value === 1 && (
                 <Typography variant="h6">Ma recherche</Typography>
               )}
-              {value === 2 && <SentByUser />}
+              {/* {value === 2 && <SentByUser />} */}
             </Box>
           </Card>
         </Grid>

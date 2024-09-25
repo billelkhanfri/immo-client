@@ -19,3 +19,20 @@ export function getAllReferralAttributes() {
       }
     };
   }
+
+  //GET - Get a single referral attribute by ID
+export function getAttributeById(attributeId) {
+  return async (dispatch, getState) => {
+    try {
+      const { data } = await request.get(`/api/referrals-attributes/${attributeId}`, {
+        headers: {
+          Authorization: "Bearer " + getState().auth.user.token,
+        },
+      });
+      dispatch(referralAttributesActions.getAttributeById(data)); // Make sure you have the corresponding action
+    } catch (error) {
+      toast.error(error.response.data.message);
+      console.log(error.response.data.error);
+    }
+  };
+}

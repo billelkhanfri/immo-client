@@ -1,10 +1,9 @@
 import { useState } from "react";
-import UserOffersCard from "./UserOffersCard";
+import ReceivedOffersCard from "./ReceivedOffersCard";
 import { Box, Button, Typography, Chip } from "@mui/material";
 
 function RecievedByUser({ receivedReferral }) {
   const [showAll, setShowAll] = useState(false);
-console.log(receivedReferral)
   // Determine how many offers to show based on the 'showAll' state
   const offersToShow = showAll ? receivedReferral : receivedReferral.slice(0, 3);
  return (
@@ -52,7 +51,7 @@ console.log(receivedReferral)
             {offersToShow?.map((referral) => (
               <Box key={referral.id} sx={{ width: "100%" }}>
                 <Chip label="Attribuées" variant="outlined" />
-                <UserOffersCard offer={referral} />
+                <ReceivedOffersCard offer={referral} />
               </Box>
             ))}
           </Box>

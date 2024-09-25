@@ -1,11 +1,10 @@
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import { Box, Stack } from '@mui/material';
+import { Box} from '@mui/material';
 import Divider from '@mui/material/Divider';
 import {Link} from 'react-router-dom'
 function UserCard({ user }) {

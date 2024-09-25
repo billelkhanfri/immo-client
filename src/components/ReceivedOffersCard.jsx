@@ -9,13 +9,12 @@ import {
 } from "@mui/material";
 import { Link } from "react-router-dom";
 
-const UserOffersCard = ({ offer, requests }) => {
+const ReceivedOffersCard = ({ offer, requests}) => {
   const [loading, setLoading] = useState(true);
   const userInfo = JSON.parse(localStorage.getItem('userInfo'))
  const isSender = offer?.senderId=== userInfo.id
-
+console.log(offer)
  const request = requests?.find((e) => e.referralId === offer?.id) 
- console.log(offer)
 
  const statusTranslation = {
   pending: "En attente",
@@ -118,7 +117,7 @@ const UserOffersCard = ({ offer, requests }) => {
   return (
     <Card
       component={Link}
-      to={`/offre/${offer?.referralId}`}
+      to={`/offre/${offer?.id}`}
       variant="outlined"
       sx={{
         display: "flex",
@@ -186,7 +185,7 @@ const UserOffersCard = ({ offer, requests }) => {
   }
   gutterBottom
 >
-  {statusTranslation[request?.status] || offer?.status}
+  { offer?.status}
 </Typography>
 
         </Box>
@@ -213,7 +212,7 @@ const UserOffersCard = ({ offer, requests }) => {
               textDecoration: "none", // Ensure no underline by default
             }}
           >
-            {offer?.referral?.commentaire}
+            {offer?.commentaire}
           </Typography>
           <Button
             variant="outlined"
@@ -239,10 +238,10 @@ const UserOffersCard = ({ offer, requests }) => {
             gap: 2,
           }}
         ><Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-        {offer?.referral?.typeDeReferral}
+        {offer?.typeDeReferral}
       </Typography>
       <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-        {offer?.referral?.lieu}
+        {offer?.lieu}
       </Typography>
     
     </Box> )}
@@ -252,4 +251,4 @@ const UserOffersCard = ({ offer, requests }) => {
   );
 };
 
-export default UserOffersCard;
+export default ReceivedOffersCard;

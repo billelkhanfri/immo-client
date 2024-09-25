@@ -23,7 +23,7 @@ import StepperComponent from "../components/Stepper";
 import ReferralRequests from "../components/ReferralRequests";
 import { getAllUsers } from "../redux/apiCalls/userApiCall";
 import UserAttributed from "../components/UserAttributed";
-import {getAllReferralAttributes} from "../redux/apiCalls/attributeApiCall"
+import {getAllReferralAttributes, getAttributeById} from "../redux/apiCalls/attributeApiCall"
 
 
 function formatDate(dateString) {
@@ -39,43 +39,42 @@ function formatDate(dateString) {
 
 
 function Offer() {
- 
+  const [timeRemaining, setTimeRemaining] = useState("");
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const navigate = useNavigate();
   const { id } = useParams();
   const dispatch = useDispatch();
   const { referral } = useSelector((state) => state.referrals);
-  const { attributes } = useSelector((state) => state.attributes);
-  const attribute = attributes.filter((att)=> att.senderId === userInfo.id)
-
+  const { attributes, attribute } = useSelector((state) => state.attributes);
   const allUsers = useSelector((state) => state.user.allUsers);
   const {request, requests} = useSelector((state)=> state.requests)
+
+//conditions
   const isSender = referral?.senderId === userInfo.id;
   const isReceiver = referral?.receiverId === userInfo.id;
   const isOpen = referral?.receiverId === null;
    const isRequested = request?.referralId === id
-
    const isWaitingAttribution = attribute?.some((att) => 
     att.senderId === userInfo.id &&
     att.referralId === id &&
     att.status === "pending"
   );
-  
-const attributedReferral = attributes?.find((att)=> (att.receivedId === userInfo.id && att.referralId === id ))
-console.log(attributedReferral)
-  
-  const [timeRemaining, setTimeRemaining] = useState("");
-  const filteredRequest =  requests.find((req) => req.requesterId === userInfo.id)
-
-  
+ const attributedReferral = attributes?.find((att)=> (att.receivedId === userInfo.id && att.referralId === id ))
+ const filteredRequest =  requests.find((req) => req.requesterId === userInfo.id)
   const isRequester = filteredRequest?.requesterId === userInfo.id
-console.log(attribute)
+
+
+
+
   useEffect(() => {
    dispatch(getAllRequests())
    dispatch(getAllUsers())
    dispatch(getAllReferralAttributes())
+   dispatch(getAttributeById(id))
   
   }, []);
+  console.log(attribute)
+
 
 
   useEffect(() => {

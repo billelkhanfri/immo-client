@@ -1,6 +1,5 @@
 import { Container, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import UserOffersCard from "../components/UserOffersCard";
 import { useEffect } from "react";
 import { getAllReferrals } from "../redux/apiCalls/referralApiCall";
 
