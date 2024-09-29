@@ -3,12 +3,14 @@ import {  useState } from "react";
 import PendingOffersCard from "./PendingOffersCard";
 import { Box, Button, Typography } from "@mui/material";
 
-function PendingReferrals({pendingSent , requestData, pendingReceived}) {
- console.log(pendingSent)
- console.log(pendingReceived)
-  const [showAll, setShowAll] = useState(false);
+function PendingReferrals({pendingReferral , requestData}) {
 
- 
+  const [showAll, setShowAll] = useState(false);
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+
+const pendingSent = pendingReferral?.filter((p) => p.senderId === userInfo.id)
+const pendingReceived = pendingReferral?.filter((p) => p.receivedId === userInfo.id)
+
 
   return (
     <Typography

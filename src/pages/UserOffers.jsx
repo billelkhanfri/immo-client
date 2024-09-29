@@ -19,8 +19,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllReferrals } from "../redux/apiCalls/referralApiCall";
 import OpenReferrals from "../components/OpenReferrals";
 
-
-
+import InProgressReferral from "../components/InProgressReferral";
 
 function UserOffers() {
   const [value, setValue] = useState(0);
@@ -45,10 +44,10 @@ function UserOffers() {
   const requestData=  requests.filter((req) => req.requesterId === userInfo.id)
 
 
- const receivedReferral = attributedReferral
- const openReferrals = referrals?.filter((r)=> !r.isPending && r.senderId === userInfo?.id)
- const pendingSentReferral = attributes.filter((att)=> att.senderId === userInfo?.id)
- const pendingReceivedReferral = attributes.filter((att)=> att.receivedId === userInfo?.id)
+ const receivedReferral =  referrals?.filter((r)=>  r.status !== "envoye" &&  r.receiverId === userInfo?.id)
+ const sentReferral =  referrals?.filter((r)=>  r.status !== "envoye" &&  r.senderId=== userInfo?.id)
+ const openReferrals = referrals?.filter((r)=>  r.status === "envoye" && !r.isPending && r.senderId === userInfo?.id)
+ const pendingReferral = attributes.filter((att)=> att.status === "pending" && (att.receivedId === userInfo.id || att.senderId === userInfo.id))
 
   return (
     <Container sx={{ backgroundColor: "#FFFFFF", borderRadius: 2, padding: 2 }}>
@@ -92,7 +91,7 @@ function UserOffers() {
       label={
         <Box>
           <Badge
-           badgeContent={pendingSentReferral?.length + pendingReceivedReferral?.length }
+           badgeContent={pendingReferral?.length }
            color="error"
             sx={{
               '.MuiBadge-badge': {
@@ -105,12 +104,12 @@ function UserOffers() {
         </Box>
       }
     />
-          <BottomNavigationAction label=  {   <Badge badgeContent= { receivedReferral?.length} color="error"  sx={{
+          <BottomNavigationAction label=  {   <Badge badgeContent= { receivedReferral?.length + sentReferral?.length} color="error"  sx={{
               '.MuiBadge-badge': {
                 top: -5,
               },
             }}>
-          Mes offres reçues
+          Mes offres en cours
     </Badge>} />
           <BottomNavigationAction label= { <Badge badgeContent={filteredRequest?.length}  color="error"  sx={{
               '.MuiBadge-badge': {
@@ -123,8 +122,8 @@ function UserOffers() {
         <Box mt={2}>
         {value === 0 && <OpenReferrals openReferrals = {openReferrals}/>}
 
-          {value === 1 && <PendingReferrals pendingSent= {pendingSentReferral} pendingReceived = {pendingReceivedReferral}/>}
-          {value === 2 && <RecievedByUser receivedReferral = {receivedReferral}/>}
+          {value === 1 && <PendingReferrals  pendingReferral= {pendingReferral}/>}
+          {value === 2 && <InProgressReferral receivedReferral = {receivedReferral} sentReferral = {sentReferral}/>}
           {value === 3 && <SentByUser sentReferrals = {filteredRequest} requestData = {requestData}/>}
         </Box>
       </Box>

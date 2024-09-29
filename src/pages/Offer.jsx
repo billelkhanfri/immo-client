@@ -54,8 +54,14 @@ function Offer() {
   const isReceiver = referral?.receiverId === userInfo.id;
   const isOpen = referral?.receiverId === null;
    const isRequested = request?.referralId === id
+
    const isWaitingAttribution = attribute?.some((att) => 
     att.senderId === userInfo.id &&
+    att.referralId === id &&
+    att.status === "pending"
+  );
+  const isWaitingAttributionReceiver = attribute?.some((att) => 
+    att.receivedId === userInfo.id &&
     att.referralId === id &&
     att.status === "pending"
   );
@@ -73,7 +79,6 @@ function Offer() {
    dispatch(getAttributeById(id))
   
   }, []);
-  console.log(attribute)
 
 
 
@@ -144,8 +149,8 @@ function Offer() {
     <Stack spacing={isSender ? 1 : 2} direction={isSender ? "row" : "column"}>
     
 
-      {referral?.status === "envoyé" && isWaitingAttribution && (
-        isSender ? (
+      {isWaitingAttribution && 
+          (
           <Stack variant="subtitle1" flexDirection="row" alignItems="center" justifyContent="center" gap={1}>
               <Typography> Temps restant:  </Typography>
            
@@ -153,7 +158,8 @@ function Offer() {
               sx={{ bgcolor: "red", color: "white" }} 
             />  
           </Stack>  
-        ) : (
+        ) }
+        {isWaitingAttributionReceiver && (
           <>
             <Button variant="contained" onClick={handleAccept} disabled={timeRemaining === "Expirée"}>
               Accepter
@@ -170,8 +176,8 @@ function Offer() {
           </Stack>                  
             
           </>
-        )
-      )}
+        )}
+  
     </Stack>
   );
 
