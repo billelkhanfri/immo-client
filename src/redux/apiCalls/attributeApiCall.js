@@ -36,3 +36,30 @@ export function getAttributeById(attributeId) {
     }
   };
 }
+// PUT - Update a referral attribute's status
+export function updateReferralAttributeStatus(attributeId, newStatus) {
+  return async (dispatch, getState) => {
+    try {
+      const { data } = await request.put(
+        `/api/referrals-attributes/${attributeId}`,
+        { status: newStatus }, // Sending new status in request body
+        {
+          headers: {
+            Authorization: "Bearer " + getState().auth.user.token,
+          },
+        }
+      );
+      // Dispatch the action to update the status in the Redux store
+      dispatch(
+        referralAttributesActions.updateAttributeStatus({
+          id: attributeId,
+          status: newStatus,
+        })
+      );
+      toast.success("Status updated successfully!");
+    } catch (error) {
+      toast.error(error.response.data.message);
+      console.log(error.response.data.message);
+    }
+  };
+}

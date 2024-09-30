@@ -9,7 +9,6 @@ import  { useEffect, useState } from "react";
 
 import {  getAllRequests } from "../redux/apiCalls/requestApiCall";
 
-import SentByUser from "../components/PendingReferrals";
 import {getAllReferralAttributes, getAttributeById} from "../redux/apiCalls/attributeApiCall"
 
 import PendingReferrals from "../components/PendingReferrals";
@@ -18,7 +17,7 @@ import Badge from '@mui/material/Badge';
 import { useDispatch, useSelector } from "react-redux";
 import { getAllReferrals } from "../redux/apiCalls/referralApiCall";
 import OpenReferrals from "../components/OpenReferrals";
-
+import DemandedReferrals from "../components/DemandedReferrals";
 import InProgressReferral from "../components/InProgressReferral";
 
 function UserOffers() {
@@ -30,7 +29,6 @@ function UserOffers() {
 
   const {requests} = useSelector((state)=> state.requests)
   const { attributes } = useSelector((state) => state.attributes);
-  const attributedReferral = attributes?.filter((att)=> att.receivedId == userInfo.id )
   // Fetch referral data on component mount
   useEffect(() => {
     dispatch(getAllReferrals());
@@ -40,13 +38,13 @@ function UserOffers() {
 
 
 
-  const filteredRequest =  requests.filter((req) => req.requesterId === userInfo.id).map((ref)=> ref.referral)
+ 
   const requestData=  requests.filter((req) => req.requesterId === userInfo.id)
+console.log(requestData)
 
-
- const receivedReferral =  referrals?.filter((r)=>  r.status !== "envoye" &&  r.receiverId === userInfo?.id)
- const sentReferral =  referrals?.filter((r)=>  r.status !== "envoye" &&  r.senderId=== userInfo?.id)
- const openReferrals = referrals?.filter((r)=>  r.status === "envoye" && !r.isPending && r.senderId === userInfo?.id)
+ const receivedReferral =  referrals?.filter((r)=>  r.status !== "envoyé" &&  r.receiverId === userInfo?.id)
+ const sentReferral =  referrals?.filter((r)=>  r.status !== "envoyé" &&  r.senderId=== userInfo?.id)
+ const openReferrals = referrals?.filter((r)=>  r.status === "envoyé" && !r.isPending && r.senderId === userInfo?.id)
  const pendingReferral = attributes.filter((att)=> att.status === "pending" && (att.receivedId === userInfo.id || att.senderId === userInfo.id))
 
   return (
@@ -111,12 +109,12 @@ function UserOffers() {
             }}>
           Mes offres en cours
     </Badge>} />
-          <BottomNavigationAction label= { <Badge badgeContent={filteredRequest?.length}  color="error"  sx={{
+          <BottomNavigationAction label= { <Badge badgeContent={requestData?.length}  color="error"  sx={{
               '.MuiBadge-badge': {
                 top: -5,
               },
             }}>
-         Mes Offres demandées
+         Mes demandes 
     </Badge> } />
         </BottomNavigation>
         <Box mt={2}>
@@ -124,7 +122,7 @@ function UserOffers() {
 
           {value === 1 && <PendingReferrals  pendingReferral= {pendingReferral}/>}
           {value === 2 && <InProgressReferral receivedReferral = {receivedReferral} sentReferral = {sentReferral}/>}
-          {value === 3 && <SentByUser sentReferrals = {filteredRequest} requestData = {requestData}/>}
+          {value === 3 && <DemandedReferrals  requestData = {requestData}/>}
         </Box>
       </Box>
     </Container>

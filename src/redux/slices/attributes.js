@@ -18,7 +18,21 @@ const referralAttributesSlice = createSlice({
       state.attribute = action.payload;
     },
     
-    // Optionally, you can add more reducers here for additional functionality
+  // Action to update a single referral attribute
+updateAttributeStatus(state, action) {
+  const { id, status } = action.payload;
+
+  // Find the attribute by its id
+  const attributeIndex = state.attributes.findIndex(
+    (attribute) => attribute.id === id
+  );
+
+  // If the attribute exists, update its status
+  if (attributeIndex !== -1) {
+    state.attributes[attributeIndex].status = status;
+  }
+}
+
   },
 });
 

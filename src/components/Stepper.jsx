@@ -14,16 +14,16 @@ const steps = [
   "acte",
 ];
 
-function StepperComponent({ referral, attributedReferral}) {
+function StepperComponent({ referral, attributedReferral, requested}) {
   // Function to check if the step is "attribué" and rejected
   const isStepFailed = (step) => {
-    return step === 2 && referral?.status === "rejeté";  // Mark the 3rd step (attribué) as failed only if rejected
+    return step === 1 && attributedReferral?.status === "rejected";  
   };
-console.log(attributedReferral)
+
   // // Find the index of the current referral status in the steps array
   // const activeStepIndex =referral?.status !== "rejeté"? steps.indexOf(referral?.status) : 2;
   //   // Find the index of the current referral status in the steps array
-    const activeStepIndex = referral?.isPending?  1: steps.indexOf(referral?.status);
+    const activeStepIndex = attributedReferral?.status ==="pending" || requested?.status ==="pending"?  1: steps.indexOf(referral?.status);
 
   return (
     <Box sx={{ width: '100%' }}>

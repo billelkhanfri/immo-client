@@ -23,7 +23,7 @@ import StepperComponent from "../components/Stepper";
 import ReferralRequests from "../components/ReferralRequests";
 import { getAllUsers } from "../redux/apiCalls/userApiCall";
 import UserAttributed from "../components/UserAttributed";
-import {getAllReferralAttributes, getAttributeById} from "../redux/apiCalls/attributeApiCall"
+import {getAllReferralAttributes, getAttributeById, updateReferralAttributeStatus} from "../redux/apiCalls/attributeApiCall"
 
 
 function formatDate(dateString) {
@@ -65,13 +65,16 @@ function Offer() {
     att.referralId === id &&
     att.status === "pending"
   );
+
  const attributedReferral = attributes?.find((att)=> (att.receivedId === userInfo.id && att.referralId === id ))
- const filteredRequest =  requests.find((req) => req.requesterId === userInfo.id)
-  const isRequester = filteredRequest?.requesterId === userInfo.id
+
+ const filteredRequest =  requests.find((req) => req.requesterId === userInfo.id && req.referralId === id)
 
 
 
-
+const requested = requests.find((req) => req.requesterId === userInfo.id && req.referralId === id)
+const isRequester = requested?.requesterId === userInfo.id
+console.log(requested)
   useEffect(() => {
    dispatch(getAllRequests())
    dispatch(getAllUsers())
@@ -131,12 +134,12 @@ function Offer() {
   
 
   const handleReject = async () => {
-    await dispatch(updateReferralStatus(id, "rejeté"));
+    await dispatch(updateReferralAttributeStatus(id, "rejected"));
     await dispatch(getReferral(id)); 
   };
   const handleAccept = async () => {
-    await dispatch(updateReferralStatus(id, "attribué"));
-    await dispatch(getReferral(id)); // Ensure the state is updated and fetched
+    await dispatch(updateReferralAttributeStatus(id, "accepted"));
+    await dispatch(getReferral(id)); 
 
  };
  
@@ -189,7 +192,8 @@ function Offer() {
     if (isSender) {
       // Si l'utilisateur est l'expéditeur
       avatarSrc = referral?.receiver?.Profile?.imageUrl || request?.requester?.Profile?.imageUrl || ""; 
-  
+      subheader = `${referral?.receiver?.firstName || ''} ${referral?.receiver?.lastName || ''} / ${referral?.receiver?.organisation?.toUpperCase() || ''}`;
+
       if (!isOpen && !isRequested) {
         subheader = `${referral?.receiver?.firstName || ''} ${referral?.receiver?.lastName || ''} / ${referral?.receiver?.organisation?.toUpperCase() || ''}`;
       } else if (isOpen && isRequested) {
@@ -197,11 +201,20 @@ function Offer() {
        }// else if (isOpen && !isRequested) {
       //   subheader = "En attente d'une attribution"; // Cas où la demande est ouverte mais pas encore attribuée
       // }
-    } else if (isReceiver) {
+    } else if (isReceiver ) {
       // Si l'utilisateur est le destinataire
-      avatarSrc = referral?.sender?.Profile?.imageUrl || "";
+      avatarSrc = referral?.sender?.Profile?.imageUrl ||attributedReferral?.sender?.Profile?.imageUrl  ||"";
       subheader = `${referral?.sender?.firstName || ''} ${referral?.sender?.lastName || ''} / ${referral?.sender?.organisation?.toUpperCase() || ''}`;
-    } else {
+    } 
+    else if (!isReceiver ) {
+      avatarSrc = attributedReferral?.sender?.Profile?.imageUrl  ||"";
+      subheader = `${attributedReferral?.sender?.firstName || ''} ${attributedReferral?.sender?.lastName || ''} / ${attributedReferral?.sender?.organisation?.toUpperCase() || ''}`;
+    }
+    else if (isOpen && !isSender &&  isRequester && isRequested ) {
+      // Si l'utilisateur est le destinataire
+      avatarSrc = requested?.referral?.sender?.Profile?.imageUrl ;
+      subheader = `${requested?.referral.sender.firstName} ${requested?.referral.sender.lastName} / ${requested?.referral.sender.organisation?.toUpperCase() || ''}`;
+    }else {
       // Cas où l'utilisateur n'est ni expéditeur ni destinataire
       subheader = "Non attribué";
     }
@@ -219,7 +232,7 @@ function Offer() {
       
         
                
-                <UserAttributed users = {allUsers} referral={referral}/>
+        <UserAttributed users = {allUsers} referral={referral}/>
              
 
              
@@ -298,7 +311,7 @@ function Offer() {
 
           {renderCardHeader()}
 
-          {isOpen && !isSender && !isRequester &&(
+          {isOpen && !isSender && !isRequester &&!isWaitingAttributionReceiver&&(
             <Button variant="contained" onClick={handleRequest}>
               Demander ce referral
             </Button>
@@ -369,7 +382,7 @@ function Offer() {
 {filteredRequest?.status == "rejected" && isRequester ?(
  ""
 
-) :  <Box m={5}>  <StepperComponent referral = {referral} attributedReferral = {attributedReferral}></StepperComponent> </Box>}
+) :  <Box m={5}>  <StepperComponent requested = {requested} referral = {referral} attributedReferral = {attributedReferral}></StepperComponent> </Box>}
     
     </Container>
   );

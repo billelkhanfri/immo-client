@@ -9,6 +9,9 @@ import Divider from '@mui/material/Divider';
 import {Link} from 'react-router-dom'
 
 function ReferralCard({referral}) {
+
+  const userInfo =  JSON.parse(localStorage.getItem('userInfo'))
+
     const date = new Date(referral.createdAt);
     const dateFormat = Intl.DateTimeFormat("fr-FR", {
       dateStyle: "short",
@@ -65,8 +68,16 @@ function ReferralCard({referral}) {
 
 
           <Box sx={{ padding: '16px', display: 'flex', justifyContent: 'right' }}>
-  {referral?.status !== "envoyé"  ? (
-    <Button variant="contained" disabled size="small">{referral?.status}</Button>
+  {referral?.status !== "envoyé" ? (
+    referral?.senderId === userInfo.id ||  referral?.receiverId=== userInfo.id? (
+      <Link to={`/offre/${referral.id}`}>
+        <Button variant="contained" size="small">{referral?.status}</Button>
+      </Link>
+    ) : (
+      <Button variant="contained" disabled size="small">
+        {referral?.status}
+      </Button>
+    )
   ) : (
     <Link to={`/offre/${referral.id}`}>
       <Button variant="contained" size="small">Voir</Button>
