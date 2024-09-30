@@ -13,6 +13,7 @@ import { useSelector } from "react-redux";
 import Offer from "./pages/Offer";
 import Reseau from './pages/Reseau';
 import Referrals from "./pages/Referrals";
+import VerifyEmail from "./pages/verify-email/VerifyEmail";
 
 function App() {
   const { user } = useSelector((state) => state.auth);
@@ -27,6 +28,7 @@ function App() {
             path="/se-connecter"
             element={!user ? <Login /> : <Navigate to="/" />}
           ></Route>
+        
        <Route
             path="/mon-reseau"
             element={user ? <Reseau/> : <Navigate to="/" />}
@@ -59,6 +61,10 @@ function App() {
           <Route
             path="/inscription"
             element={!user ? <CreateAccount /> : <Navigate to="/" />}
+          ></Route>
+             <Route
+            path="/inscription/:userId/verify-email/:token"
+            element={!user ? <VerifyEmail /> : <Navigate to="/" />}
           ></Route>
           <Route
             path="/mon-profil/:id"

@@ -12,10 +12,17 @@ export function loginUser(user) {
       localStorage.setItem("userInfo", JSON.stringify(data));
       toast.success(data.message);
     } catch (error) {
-      toast.error(error.response.data.error);
+      // Gérer les différents types d'erreurs
+      const errorMessage =
+        error.response?.data?.message || // Pour le message de vérification de l'email
+        error.response?.data?.errors || // S'il s'agit d'une liste d'erreurs
+        error.response?.data?.error || // S'il s'agit d'un message d'erreur unique
+        "Une erreur est survenue. Veuillez réessayer.";
+      toast.error(errorMessage);
     }
   };
 }
+
 
 // Logout User
 export function logoutUser() {
@@ -38,5 +45,14 @@ export function registerUser(user) {
     }
   };
 }
-
-
+// Verify Email
+export function verifyEmail(userId, token) {
+  return async (dispatch) => {
+    try {
+      await request.get(`/api/${userId}/verify-email/${token}`);
+      dispatch(authActions.setIsEmailVerified());
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+  };
+}
