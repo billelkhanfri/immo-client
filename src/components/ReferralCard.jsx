@@ -44,7 +44,7 @@ function ReferralCard({referral}) {
     </CardContent>
     <Divider></Divider>
     <CardContent sx={{ flexGrow: 1 }}>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" fontSize = "13px"color="text.secondary">
           A la recherche d'un agent aux alentoures de   { `${referral?.lieu}`.charAt(0).toUpperCase() +referral?.lieu.slice(1)}
             </Typography>
           

@@ -28,7 +28,16 @@ function UserCard({ user }) {
           </Box>
           <Divider variant="middle" />
           <CardHeader
+          
             title={`${user.firstName} ${user.lastName}`}
+            titleTypographyProps={{
+              variant: 'h6', 
+              style: {
+                fontSize: '1.2rem', 
+                fontWeight: 'bold', 
+                color: '#333', 
+              },
+            }}
             subheader={`Membre : ${dateFormat}`}
           />
           <Divider variant="middle" />

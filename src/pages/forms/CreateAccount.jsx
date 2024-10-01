@@ -61,7 +61,18 @@ function CreateAccount() {
       organisation,
       telephone,
       termsAccepted,
+      address, // Expecting an address object
     } = formData;
+  
+    // Structure the address object
+    const addressData = {
+      street: address?.street,
+      city: address?.city,
+      region: address?.region,
+      postalCode: address?.postalCode,
+      country: address?.country,
+    };
+  
     dispatch(
       registerUser({
         firstName,
@@ -73,9 +84,11 @@ function CreateAccount() {
         organisation,
         telephone,
         termsAccepted,
+        address: addressData, // Send address as an object
       })
     );
   };
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -339,6 +352,63 @@ function CreateAccount() {
             marginY: 2,
           }}
         >
+          <Stack spacing={2}>
+  <TextField
+    label="Adresse"
+    type="text"
+    required
+    error={!!errors.address?.street}
+    helperText={errors.address?.street && errors.address.street.message}
+    {...register("address.street", {
+      required: "Ce champ est obligatoire.",
+    })}
+  />
+  <TextField
+    label="Ville"
+    type="text"
+    required
+    error={!!errors.address?.city}
+    helperText={errors.address?.city && errors.address.city.message}
+    {...register("address.city", {
+      required: "Ce champ est obligatoire.",
+    })}
+  />
+  <TextField
+    label="Région"
+    type="text"
+    required
+    error={!!errors.address?.region}
+    helperText={errors.address?.state && errors.address.region.message}
+    {...register("address.region", {
+      required: "Ce champ est obligatoire.",
+    })}
+  />
+  <TextField
+    label="Code Postal"
+    type="text"
+    required
+    error={!!errors.address?.postalCode}
+    helperText={errors.address?.postalCode && errors.address.postalCode.message}
+    {...register("address.postalCode", {
+      required: "Ce champ est obligatoire.",
+      pattern: {
+        value: /^[0-9]{5}(?:-[0-9]{4})?$/, // Adjust regex based on your postal code format
+        message: "Veuillez entrer un code postal valide",
+      },
+    })}
+  />
+  <TextField
+    label="Pays"
+    type="text"
+    required
+    error={!!errors.address?.country}
+    helperText={errors.address?.country && errors.address.country.message}
+    {...register("address.country", {
+      required: "Ce champ est obligatoire.",
+    })}
+  />
+</Stack>
+
           {" "}
           <Controller
             name="termsAccepted"
