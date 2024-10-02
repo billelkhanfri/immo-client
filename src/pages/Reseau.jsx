@@ -1,11 +1,12 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllUsers } from "../redux/apiCalls/userApiCall"; 
-import UserCard from "../components/UserCard";
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import { Container, Typography } from "@mui/material";
 import Leaflet from "../components/leaflet/Leaflet";
+import UserCardMap from "../components/UserCardMap";
+import Stack from '@mui/material/Stack';
 
 function Reseau() {
   const dispatch = useDispatch();
@@ -15,34 +16,46 @@ function Reseau() {
   useEffect(() => {
     dispatch(getAllUsers()); // Fetch users
   }, [dispatch]);
-console.log(allUsers)
-  const filteredUsers = allUsers?.filter((user) => user.id !== userInfo?.id) ;
 
-  const addresses = allUsers.map((address) =>address.address)
-
+  const filteredUsers = allUsers?.filter((user) => user.id !== userInfo?.id);
+  const addresses = filteredUsers.map((user) => user.address);
 
   return (
-    <>
-      <Leaflet   addresses = {addresses}/> 
-      <Container>
-        <Box mb={2}>
-          <Typography variant="h4" fontWeight="600">Liste des Agents</Typography>
-        </Box>
-        <Box sx={{ flexGrow: 1 }}>
-          <Grid container spacing={{ xs: 4, md: 4 }} columns={{ xs: 4, sm: 8, md: 16 }}>
+    <Container>
+      <Box mb={2}>
+        <Typography variant="h4" fontWeight="600">Liste des Agents</Typography>
+      </Box>
+      
+      <Grid container spacing={2}>
+        <Grid item xs={8}>
+          <Leaflet addresses={addresses} />
+        </Grid>
+        <Grid item xs={4}>
+          <Stack
+spacing={2}
+            sx={{ 
+              maxHeight: '900px', // Set the max height for the user card container
+              overflowY: 'auto', // Enable vertical scrolling
+              border: '1px solid #ccc', // Optional: add a border for visual separation
+              padding: 2, // Optional: add padding for better spacing
+              display:"flex",
+              flexDirection:"column",
+            
+            }}
+          >
             {filteredUsers.length === 0 ? (
               <Typography variant="h6">Aucun agent trouvé</Typography>
             ) : (
               filteredUsers.map((user) => (
-                <Grid key={user.id} xs={2} sm={4} md={4}>
-                  <UserCard user={user} />
-                </Grid>
+                <Stack key={user.id} >
+                  <UserCardMap user={user} />
+                </Stack>
               ))
             )}
-          </Grid>
-        </Box>
-      </Container>
-    </>
+          </Stack>
+        </Grid>
+      </Grid>
+    </Container>
   );
 }
 

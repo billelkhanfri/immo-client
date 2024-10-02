@@ -39,8 +39,8 @@ function UserOffers() {
 
 
  
-  const requestData=  requests.filter((req) => req.requesterId === userInfo.id)
-console.log(requestData)
+  const requestSent=  requests.filter((req) => req.requesterId === userInfo.id)
+  const requestReceived=  requests.filter((req) => req.referral.senderId === userInfo.id)
 
  const receivedReferral =  referrals?.filter((r)=>  r.status !== "envoyé" &&  r.receiverId === userInfo?.id)
  const sentReferral =  referrals?.filter((r)=>  r.status !== "envoyé" &&  r.senderId=== userInfo?.id)
@@ -109,7 +109,7 @@ console.log(requestData)
             }}>
           Mes offres en cours
     </Badge>} />
-          <BottomNavigationAction label= { <Badge badgeContent={requestData?.length}  color="error"  sx={{
+          <BottomNavigationAction label= { <Badge badgeContent={requestSent?.length}  color="error"  sx={{
               '.MuiBadge-badge': {
                 top: -5,
               },
@@ -122,7 +122,7 @@ console.log(requestData)
 
           {value === 1 && <PendingReferrals  pendingReferral= {pendingReferral}/>}
           {value === 2 && <InProgressReferral receivedReferral = {receivedReferral} sentReferral = {sentReferral}/>}
-          {value === 3 && <DemandedReferrals  requestData = {requestData}/>}
+          {value === 3 && <DemandedReferrals  requestSent = {requestSent} requestReceived = {requestReceived}/>}
         </Box>
       </Box>
     </Container>

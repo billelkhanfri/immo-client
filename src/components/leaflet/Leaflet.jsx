@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 
 const fetchCoordinates = async (address) => {
-  const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`);
+  const response = await fetch(`http://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`);
   const data = await response.json();
 
   if (data && data.length > 0) {
@@ -18,12 +18,11 @@ const fetchCoordinates = async (address) => {
 
 const LeafletMap = ({ addresses }) => {
   const [markers, setMarkers] = useState([]);
-  console.log("Received addresses:", addresses); // Log addresses
 
   useEffect(() => {
     const fetchAllCoordinates = async () => {
       const coords = await Promise.all(addresses.map(async (addressObj) => {
-        const address = `${addressObj.street}, ${addressObj.postalCode} ${addressObj.city},${addressObj.country}`;
+        const address = `${addressObj.street}, ${addressObj.postalCode}, ${addressObj.city}, ${addressObj.country}`;
  
         try {
           const { lat, lon } = await fetchCoordinates(address);
@@ -33,21 +32,25 @@ const LeafletMap = ({ addresses }) => {
           return null;
         }
       }));
-      setMarkers(coords.filter(Boolean)); // Filter out any null values
-      console.log("Markers state:", coords.filter(Boolean)); // Log markers state
+      const validCoords = coords.filter(Boolean);
+      setMarkers(validCoords);
+      
+      if (validCoords.length === 0) {
+        console.warn("No valid coordinates found.");
+      }
     };
 
     fetchAllCoordinates();
   }, [addresses]);
 
   return (
-    <MapContainer center={[46.227638,2.213749]} zoom={5} style={{ height: "60vh", width: "80%" }}>
+    <MapContainer center={[46.227638, 2.213749]} zoom={6} style={{ height: "900px", width: "100%" }}>
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       {markers.map((marker, index) => (
-        <Marker key={index} position={[marker.lat, marker.lon]}>
+        <Marker key={marker.address} position={[marker.lat, marker.lon]}>
           <Popup>{marker.address}</Popup>
         </Marker>
       ))}

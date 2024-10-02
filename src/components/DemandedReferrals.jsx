@@ -2,13 +2,12 @@ import { useState } from "react";
 import DemandedOffersCard from "./DemandedOffersCard";
 import { Box, Button, Typography, Chip } from "@mui/material";
 
-function DemandedReferrals({requestData}) {
+function DemandedReferrals({requestSent}) {
 
   const [showAllRequested, setShowAllReceived] = useState(false);
-  const [showAllSent, setShowAllSent] = useState(false);
 
   // Determine how many offers to show based on the 'showAll' state
-  const requestedOffersToShow = showAllRequested? requestData : requestData.slice(0, 3);
+  const requestedOffersToShow = showAllRequested? requestSent : requestSent.slice(0, 3);
 
   return (
     <Typography
@@ -29,11 +28,9 @@ function DemandedReferrals({requestData}) {
           alignItems: "center",
         }}
       >
-        <Typography variant="h6" sx={{ marginBottom: 2 }}>
-          Offres reçues
-        </Typography>
+        
 
-        {requestData?.length === 0 ? (
+        {requestSent?.length === 0 ? (
           <Typography
             variant="h6"
             sx={{
@@ -43,7 +40,7 @@ function DemandedReferrals({requestData}) {
               height: "100%",
             }}
           >
-            Aucune offre reçue
+            Aucune demande envoyée
           </Typography>
         ) : (
           <>
@@ -63,7 +60,7 @@ function DemandedReferrals({requestData}) {
               ))}
             </Box>
 
-            {requestData?.length > 3 && (
+            {requestSent?.length > 3 && (
               <Box
                 textAlign="center"
                 mt={2}
