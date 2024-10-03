@@ -58,15 +58,41 @@ function Offer() {
    const isWaitingAttribution = attribute?.some((att) => 
     att.senderId === userInfo.id &&
     att.referralId === id &&
-    att.status === "pending"
+    att.status === "pending" 
+   
   );
   const isWaitingAttributionReceiver = attribute?.some((att) => 
     att.receivedId === userInfo.id &&
     att.referralId === id &&
-    att.status === "pending"
+    att.status === "pending" 
+  );
+  const isExpiredSender = attribute?.some((att) => 
+    att.senderId === userInfo.id &&
+    att.referralId === id &&
+    att.status === "expired" 
   );
 
+  const isExpiredReceiver = attribute?.some((att) => 
+    att.receivedId === userInfo.id &&
+    att.referralId === id &&
+    att.status === "expired" 
+  );
+
+  const isRequestedSender = requests?.find((att) => 
+    att.requesterId === userInfo.id &&
+    att.referralId === id &&
+    att.status === "pending" 
+)
+console.log(isRequestedSender)
+const isRequestedReceiver = requests?.find((att) => 
+  att.referral.senderId=== userInfo.id &&
+  att.referralId === id &&
+  att.status === "pending" 
+)
+
+console.log(isRequestedReceiver)
  const attributedReferral = attributes?.find((att)=> (att.receivedId === userInfo.id && att.referralId === id ))
+ const attribution = attributes?.find((att)=> (att.senderId === userInfo.id && att.referralId === id ))
 
  const filteredRequest =  requests.find((req) => req.requesterId === userInfo.id && req.referralId === id)
 
@@ -103,7 +129,7 @@ console.log(requested)
   useEffect(() => {
     if (referral?.createdAt) {
       const createdAtDate = new Date(referral.createdAt);
-      const countdownDate = new Date(createdAtDate.getTime() + 24 * 60 * 60 * 1000);
+      const countdownDate = new Date(createdAtDate.getTime() + 0.9 * 60 * 60 * 1000);
   
       const updateCountdown = () => {
         const now = new Date();
@@ -142,7 +168,18 @@ console.log(requested)
     await dispatch(getReferral(id)); 
 
  };
- 
+  const handleExpire =  async ()=> {
+    if (timeRemaining === "Expirée"){
+      await dispatch(updateReferralAttributeStatus(id, "expired"))
+      await dispatch(getReferral(id)); 
+
+    }
+  }
+  useEffect(()=> {
+    if (timeRemaining === "Expirée"){
+handleExpire()
+    }
+  },[timeRemaining])
  
 
 
@@ -162,7 +199,35 @@ console.log(requested)
             />  
           </Stack>  
         ) }
-        {isWaitingAttributionReceiver && (
+           {isExpiredSender &&  
+          (
+          <Stack variant="subtitle1" flexDirection="row" alignItems="center" justifyContent="center" gap={1}>
+              <Typography> Temps restant:  </Typography>
+           
+             <Chip variant="contained" label={timeRemaining} 
+              sx={{ bgcolor: "red", color: "white" }} 
+            />  
+          </Stack>  
+        ) }
+        {isWaitingAttributionReceiver &&(
+          <>
+            <Button variant="contained" onClick={handleAccept} disabled={timeRemaining === "Expirée"}>
+              Accepter
+            </Button>
+            <Button variant="outlined" color="error" onClick={handleReject} disabled={timeRemaining === "Expirée"}>
+              Rejeter
+            </Button>
+            <Stack variant="subtitle1" flexDirection="row" alignItems="center" justifyContent="center" gap={1}>
+              <Typography> Temps restant:  </Typography>
+           
+             <Chip variant="contained" label={timeRemaining} 
+              sx={{ bgcolor: "red", color: "white" }} 
+            />  
+          </Stack>                  
+            
+          </>
+        )}
+            {isExpiredReceiver  &&(
           <>
             <Button variant="contained" onClick={handleAccept} disabled={timeRemaining === "Expirée"}>
               Accepter
@@ -191,17 +256,13 @@ console.log(requested)
   
     if (isSender) {
       // Si l'utilisateur est l'expéditeur
-      avatarSrc = referral?.receiver?.Profile?.imageUrl || request?.requester?.Profile?.imageUrl || ""; 
+      avatarSrc = referral?.receiver?.Profile?.imageUrl || ""; 
       subheader = `${referral?.receiver?.firstName || ''} ${referral?.receiver?.lastName || ''} / ${referral?.receiver?.organisation?.toUpperCase() || ''}`;
 
       if (!isOpen && !isRequested) {
         subheader = `${referral?.receiver?.firstName || ''} ${referral?.receiver?.lastName || ''} / ${referral?.receiver?.organisation?.toUpperCase() || ''}`;
-      } else if (isOpen && isRequested) {
-        subheader = `${request?.requester?.firstName || ''} ${request?.requester?.lastName || ''} / ${request?.requester?.organisation?.toUpperCase() || ''}`;
-       }// else if (isOpen && !isRequested) {
-      //   subheader = "En attente d'une attribution"; // Cas où la demande est ouverte mais pas encore attribuée
-      // }
-    } else if (isReceiver ) {
+      } 
+    } else if (isReceiver || (isOpen && !isSender) ){
       // Si l'utilisateur est le destinataire
       avatarSrc = referral?.sender?.Profile?.imageUrl ||attributedReferral?.sender?.Profile?.imageUrl  ||"";
       subheader = `${referral?.sender?.firstName || ''} ${referral?.sender?.lastName || ''} / ${referral?.sender?.organisation?.toUpperCase() || ''}`;
@@ -210,11 +271,8 @@ console.log(requested)
       avatarSrc = attributedReferral?.sender?.Profile?.imageUrl  ||"";
       subheader = `${attributedReferral?.sender?.firstName || ''} ${attributedReferral?.sender?.lastName || ''} / ${attributedReferral?.sender?.organisation?.toUpperCase() || ''}`;
     }
-    else if (isOpen && !isSender &&  isRequester && isRequested ) {
-      // Si l'utilisateur est le destinataire
-      avatarSrc = requested?.referral?.sender?.Profile?.imageUrl ;
-      subheader = `${requested?.referral.sender.firstName} ${requested?.referral.sender.lastName} / ${requested?.referral.sender.organisation?.toUpperCase() || ''}`;
-    }else {
+ 
+    else {
       // Cas où l'utilisateur n'est ni expéditeur ni destinataire
       subheader = "Non attribué";
     }
@@ -382,7 +440,7 @@ console.log(requested)
 {filteredRequest?.status == "rejected" && isRequester ?(
  ""
 
-) :  <Box m={5}>  <StepperComponent requested = {requested} referral = {referral} attributedReferral = {attributedReferral}></StepperComponent> </Box>}
+) :  <Box m={5}>  <StepperComponent requested = {requested} timeRemaining= {timeRemaining} attribution = {attribution} referral = {referral} attributedReferral = {attributedReferral}></StepperComponent> </Box>}
     
     </Container>
   );

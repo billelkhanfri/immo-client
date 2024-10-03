@@ -15,7 +15,7 @@ import {
   import { styled } from '@mui/material/styles';
   import Paper from '@mui/material/Paper';
   import Grid from '@mui/material/Grid2';
-
+  import {Link} from 'react-router-dom'
 
 
   function formatDate(dateString) {
@@ -43,7 +43,7 @@ import {
   
 function ReferralRequests({referral,requests}) {
 
-
+console.log(referral)
 
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     const { id } = useParams();
@@ -67,11 +67,14 @@ const filterRequests =  requests?.filter((req) => req?.referralId === id)
         <Grid size={12}>
         <Item sx={{display:"flex"}}>
         <Grid size={3}sx={{display:"flex", justifyContent:"center"}} >
+        <Link
+                      to={`/mon-profil/${req.requesterId}`}> 
         <CardHeader
         avatar={<Avatar aria-label="recipe" sx={{ width: 32, height: 32 }} src={req?.requester.Profile.imageUrl} />}
         title={req?.requester.firstName +" "+ req?.requester.lastName}
      
       />
+      </Link>
               </Grid>
               <Grid size={3}sx={{display:"flex", alignItems:"center" , justifyContent:"center"}} >
               {formatDate(req?.createdAt)}

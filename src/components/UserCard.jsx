@@ -17,8 +17,6 @@ function UserCard({ user }) {
     <>
       <Card sx={{ maxWidth: 345, height: 450, display: 'flex', flexDirection: 'column' }}>
         <Box display="flex" flexDirection="column" flex="1">
-     <Link
-                      to={`/mon-profil/${user.id}`}> 
           <Box display="flex" alignItems="center" justifyContent="center" padding="16px">
             <Avatar
               alt="Remy Sharp"
@@ -28,16 +26,7 @@ function UserCard({ user }) {
           </Box>
           <Divider variant="middle" />
           <CardHeader
-          
             title={`${user.firstName} ${user.lastName}`}
-            titleTypographyProps={{
-              variant: 'h6', 
-              style: {
-                fontSize: '1.2rem', 
-                fontWeight: 'bold', 
-                color: '#333', 
-              },
-            }}
             subheader={`Membre : ${dateFormat}`}
           />
           <Divider variant="middle" />
@@ -49,13 +38,9 @@ function UserCard({ user }) {
               Organisation : {user.organisation}
             </Typography>
           </CardContent>
-          </Link>
-          <Link   to={`/creer-une-offre/${user.id}`}> 
           <Box sx={{ padding: '16px', display: 'flex', justifyContent: 'center' }}>
-         
             <Button variant="contained" size="small">Envoyer un referral</Button>
           </Box>
-          </Link>
         </Box>
       </Card>
     </>
