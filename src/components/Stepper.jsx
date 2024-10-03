@@ -25,10 +25,7 @@ function StepperComponent({ referral, attributedReferral, attribution, requested
   const isStepFailed = (step) => {
     return step === 1 && (attributedReferral?.status === "rejected" || timeRemaining === "Expirée");  
   };
-console.log(attributedReferral)
-  // // Find the index of the current referral status in the steps array
-  // const activeStepIndex =referral?.status !== "rejeté"? steps.indexOf(referral?.status) : 2;
-  //   // Find the index of the current referral status in the steps array
+
     const activeStepIndex = attributedReferral?.status ==="pending" || requested?.status ==="pending" || attribution?.status==="pending" ?  1: steps.indexOf(referral?.status);
 
   return (

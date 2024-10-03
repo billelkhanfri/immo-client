@@ -38,9 +38,11 @@ function UserCard({ user }) {
               Organisation : {user.organisation}
             </Typography>
           </CardContent>
+          <Link   to={`/creer-une-offre/${user.id}`}> 
           <Box sx={{ padding: '16px', display: 'flex', justifyContent: 'center' }}>
             <Button variant="contained" size="small">Envoyer un referral</Button>
           </Box>
+          </Link>
         </Box>
       </Card>
     </>

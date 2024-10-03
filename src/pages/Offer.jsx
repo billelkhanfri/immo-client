@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { SlLocationPin } from "react-icons/sl";
+import {  FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+
 import {
   Container,
   Typography,
@@ -14,6 +16,7 @@ Box,
   Chip,
   Avatar,
   CardHeader,
+ 
 } from "@mui/material";
 import Grid from '@mui/material/Grid2';
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
@@ -83,24 +86,22 @@ function Offer() {
     att.referralId === id &&
     att.status === "pending" 
 )
-console.log(isRequestedSender)
+
 const isRequestedReceiver = requests?.find((att) => 
   att.referral.senderId=== userInfo.id &&
   att.referralId === id &&
   att.status === "pending" 
 )
 
-console.log(isRequestedReceiver)
  const attributedReferral = attributes?.find((att)=> (att.receivedId === userInfo.id && att.referralId === id ))
  const attribution = attributes?.find((att)=> (att.senderId === userInfo.id && att.referralId === id ))
-
  const filteredRequest =  requests.find((req) => req.requesterId === userInfo.id && req.referralId === id)
 
 
 
 const requested = requests.find((req) => req.requesterId === userInfo.id && req.referralId === id)
 const isRequester = requested?.requesterId === userInfo.id
-console.log(requested)
+
   useEffect(() => {
    dispatch(getAllRequests())
    dispatch(getAllUsers())
@@ -180,6 +181,11 @@ console.log(requested)
 handleExpire()
     }
   },[timeRemaining])
+
+  const handleUpdateReferralStatus = async (status) => {
+    await dispatch(updateReferralStatus(id, status));
+    console.log(status)
+  };
  
 
 
@@ -256,8 +262,8 @@ handleExpire()
   
     if (isSender) {
       // Si l'utilisateur est l'expéditeur
-      avatarSrc = referral?.receiver?.Profile?.imageUrl || ""; 
-      subheader = `${referral?.receiver?.firstName || ''} ${referral?.receiver?.lastName || ''} / ${referral?.receiver?.organisation?.toUpperCase() || ''}`;
+      avatarSrc = referral?.receiver?.Profile?.imageUrl || "" || attribution?.received?.Profile?.imageUrl ; 
+      subheader = `${referral?.receiver?.firstName || '' || attribution?.received?.firstName } ${referral?.receiver?.lastName || '' || attribution?.received?.lastName} / ${referral?.receiver?.organisation?.toUpperCase() || '' || attribution?.received?.organisation}`;
 
       if (!isOpen && !isRequested) {
         subheader = `${referral?.receiver?.firstName || ''} ${referral?.receiver?.lastName || ''} / ${referral?.receiver?.organisation?.toUpperCase() || ''}`;
@@ -437,13 +443,39 @@ handleExpire()
   </>)}
 
 
-{filteredRequest?.status == "rejected" && isRequester ?(
+{filteredRequest?.status == "rejected" && isRequester  ?(
  ""
 
 ) :  <Box m={5}>  <StepperComponent requested = {requested} timeRemaining= {timeRemaining} attribution = {attribution} referral = {referral} attributedReferral = {attributedReferral}></StepperComponent> </Box>}
-    
+   
+   
+{isSender && ( <Box sx={{ minWidth: 120, mb: 2 }}>
+  <Typography marginTop={6} variant="h6"> Démo étapes suivantes</Typography>
+      <FormControl fullWidth>
+        <InputLabel id="status-select-label">Statut</InputLabel>
+        <Select
+          labelId="status-select-label"
+          id="status-select"
+          onChange={(event) => handleUpdateReferralStatus(event.target.value)}
+          defaultValue=""
+        >
+          <MenuItem value="">
+            <em>Choisissez un statut</em>
+          </MenuItem>
+          <MenuItem value="pourparlers">Pourparlers</MenuItem>
+          <MenuItem value="mandat">Mandat</MenuItem>
+          <MenuItem value="compromis">Compromis</MenuItem>
+          <MenuItem value="act">Act</MenuItem>
+        </Select>
+      </FormControl>
+    </Box>)}
+   
     </Container>
+
+  
   );
+
+
 }
 
 export default Offer;

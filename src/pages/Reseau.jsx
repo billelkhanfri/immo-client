@@ -8,6 +8,8 @@ import Leaflet from "../components/leaflet/Leaflet";
 import UserCardMap from "../components/UserCardMap";
 import UserCard from "../components/UserCard"; // Import your UserCard component
 import Stack from '@mui/material/Stack';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 const cities = [
   "Paris", "Marseille", "Lyon", "Toulouse", "Nice", "Nantes", "Strasbourg",
@@ -22,17 +24,21 @@ function Reseau() {
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
 
   const [selectedCity, setSelectedCity] = useState("");
-  const [showMap, setShowMap] = useState(false); 
+  const [showMap, setShowMap] = useState("list"); 
   useEffect(() => {
     dispatch(getAllUsers()); // Fetch users
   }, [dispatch]);
 
   const filteredUsers = allUsers?.filter((user) => 
     user.id !== userInfo?.id && 
-    (selectedCity ? user.address.city === selectedCity : true) // Filter by city if selected
+    (selectedCity ? user.address.city === selectedCity : "map") // Filter by city if selected
   );
 
   const addresses = filteredUsers.map((user) => user.address);
+
+  const handleChange = (event, newAlignment) => {
+   setShowMap(newAlignment);
+  };
 
   return (
     <Container>
@@ -56,15 +62,20 @@ function Reseau() {
           </Select>
         </FormControl>
 
-        <Button 
-          variant="contained" 
-          onClick={() => setShowMap(!showMap)} 
-          color={showMap ? "primary" : "secondary"}
-        >
-          {showMap ? "Voir la Liste" : "Voir sur la Carte"}
-        </Button>
+        <ToggleButtonGroup
+      color="primary"
+      value={showMap}
+      exclusive
+      size="small" 
+      onChange={handleChange}
+      aria-label="Platform"
+    >
+      <ToggleButton value="list">List</ToggleButton>
+      <ToggleButton value="map">Carte</ToggleButton>
+     
+    </ToggleButtonGroup>
       </Stack>
-{showMap ? (<Grid container spacing={2}>
+{showMap === "map"? (<Grid container spacing={2}>
         <Grid item xs={8}>
           <Leaflet addresses={addresses} />
         </Grid>

@@ -6,6 +6,7 @@ import { Container, Typography, TextField, Button, Box, FormLabel,  FormControl,
   RadioGroup,
   FormControlLabel, Stack,
   Radio, } from "@mui/material";
+  import Slider from '@mui/material/Slider';
 import { createReferral } from "../../redux/apiCalls/referralApiCall";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
@@ -14,6 +15,27 @@ import {useEffect,useState} from "react";
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
+
+
+
+const marks = [
+  {
+    value: 0,
+    label: '0',
+  },
+  {
+    value: 20,
+    label: '20%',
+  },
+  {
+    value: 35,
+    label: '35%',
+  },
+  {
+    value: 50,
+    label: '50%',
+  },
+];
 function CreateOffer() {
   const navigate = useNavigate();
   const {id} =  useParams()
@@ -53,20 +75,24 @@ useEffect(()=> {
 
   return (
     <Container sx={{ backgroundColor: "#FFFFFF", borderRadius: 2, padding: 2 }}>
-      <Typography
-        variant="h2"
-        sx={{ mx: 4, textAlign: "center", color: "primary.main" }}
-      >
-        Créer une offre  
-      </Typography>
+      
     
       {id && userByID?.user?.id === id && (
+        <Box  sx = {{backgroundColor:"primary.main", border:1,  mt: 4,
+          mx: "auto",
+          textAlign: "center",
+          color: "primary.main",
+          maxWidth: "30rem",
+          width: "90%",
+          padding:"8px",
+          marginY: 2,}}> 
         <Typography
           variant="h6"
-          sx={{ mx: 4, textAlign: "center", color: "primary.main" }}
+          sx={{ mx: 4, textAlign: "center", color: "#fff" }}
         >
           Agent receveur : {userByID.user.firstName} {userByID.user.lastName}
         </Typography>
+        </Box>
       )}
       <Box
         component="form"
@@ -179,27 +205,42 @@ useEffect(()=> {
         />
       
         </Stack>
-       
-        <TextField
-          fullWidth
-          label="Honnoraire"
-          type="number"
-          {...register("honnoraire", { required: true })}
-          error={!!errors.honnoraire}
-          helperText={errors.honnoraire ? "Honnoraire is required" : ""}
-          sx={{ mb: 2 }}
-        />
-       
+        <FormLabel component= "legend" sx ={{mb:1 ,textAlign:"left", fontWeight:"bold"}}> 
+           Honnoraire
+            </FormLabel>
+        <Controller
+  name="honnoraire"
+  control={control}
+  defaultValue={5} // Set a default value
+  rules={{ required: "Honnoraire is required" }}
+  render={({ field }) => (
+    <Slider
+      {...field}
+      aria-label="Custom marks"
+      value={field.value || 20} // Use the field value or a default
+      onChange={(_, value) => field.onChange(value)} // Update the field value on change
+      valueLabelDisplay="auto"
+      marks={marks}
+      sx={{ mb: 4 }}
+    />
+  )}
+/>
+{errors.honnoraire && (
+  <Typography variant="body2" color="error">
+    {errors.honnoraire.message}
+  </Typography>
+)}
+
       
 
 <TextField
 fullWidth
   label="Commentaire"
-  {...register("commentaire", { required: true })}
+  {...register("commentaire", { required: false })}
   error={!!errors.commentaire}
   helperText={errors.commentaire ? "Commentaire is required" : ""}
   multiline
-  rows={4} // Adjust the number of rows (lines) visible in the textarea
+  rows={2} // Adjust the number of rows (lines) visible in the textarea
   sx={{ mb: 2 }}
 />
 
@@ -244,9 +285,11 @@ fullWidth
 
         <Button
           type="submit"
-          variant="contained"
-          color="primary"
-          sx={{ mt: 2 }}
+          // variant="contained"
+         
+       
+          sx={{ mt: 2, backgroundColor:"secondary.main" , color:"#fff"}}
+
         >
           Créer un Referral
         </Button>
