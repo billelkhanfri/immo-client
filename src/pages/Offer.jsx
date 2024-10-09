@@ -130,7 +130,7 @@ const isRequester = requested?.requesterId === userInfo.id
   useEffect(() => {
     if (referral?.createdAt) {
       const createdAtDate = new Date(referral.createdAt);
-      const countdownDate = new Date(createdAtDate.getTime() + 0.9 * 60 * 60 * 1000);
+      const countdownDate = new Date(createdAtDate.getTime() + 0.1 * 60 * 60 * 1000);
   
       const updateCountdown = () => {
         const now = new Date();
